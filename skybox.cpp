@@ -30,13 +30,25 @@ int Skybox::loadSkybox()
 
 void Skybox::drawSkybox()
 {
-	float t=10.0;
+	float t=1.0;
 	glDisable(GL_DEPTH_TEST);
 	glDisable(GL_LIGHTING);
 
 	glEnable(GL_TEXTURE_2D);
 
-	//glPushMatrix();
+	GLint* viewport = new GLint[4];
+	GLdouble* model = new GLdouble[16];
+	GLdouble* proj = new GLdouble[16];
+
+	GLdouble posx, posy, posz;
+
+	glGetIntegerv(GL_VIEWPORT, viewport);
+	glGetDoublev(GL_MODELVIEW_MATRIX, model);
+	glGetDoublev(GL_PROJECTION_MATRIX, proj);
+	gluUnProject( (viewport[2]-viewport[0])/2, (viewport[3]-viewport[1])/2, 0.0, model, proj, viewport, &posx, &posy, &posz);
+
+	glPushMatrix();
+	glTranslatef(posx, posy, posz);
 
 	glColor3f(1.0, 1.0, 1.0);
 	glBindTexture(GL_TEXTURE_2D, tabTextures[0]);
@@ -87,11 +99,15 @@ void Skybox::drawSkybox()
 		glTexCoord2d(0.0, 0.0);	glVertex3f(t, t, t);
 	glEnd();
 
-	//glPopMatrix();
+	glPopMatrix();
 
 	glDisable(GL_TEXTURE_2D);
 	glEnable(GL_DEPTH_TEST);
 	glEnable(GL_LIGHTING);
+
+	delete[] proj;
+	delete[] model;
+	delete[] viewport;
 }
 
 

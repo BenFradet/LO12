@@ -9,3 +9,11 @@ int terrainCreateDL(float xOffset, float yOffset, float zOffset);
 void terrainDestroy();
 int terrainScale(float min,float max);
 float terrainGetHeight(int x, int z);
+
+class Terrain
+{
+	int min, max;
+public:
+	Terrain();
+	~Terrain();
+};

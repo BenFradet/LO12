@@ -107,22 +107,22 @@ void initScene()
 	glEnable(GL_LIGHT0);
 }
 
-void orientMe(float ang) {
-
+void orientMe(float ang) 
+{
 	lx = sin(ang);
 	lz = -cos(ang);
 }
 
 
-void moveMeFlat(float i) {
-
+void moveMeFlat(float i) 
+{
 	x = x + i*lx;
 	z = z + i*lz;
 	y = y + i*ly;
 }
 
-void setOrthographicProjection() {
-
+void setOrthographicProjection() 
+{
 	// switch to projection mode
 	glMatrixMode(GL_PROJECTION);
 	// save previous matrix which contains the 
@@ -140,7 +140,8 @@ void setOrthographicProjection() {
 	glMatrixMode(GL_MODELVIEW);
 }
 
-void resetPerspectiveProjection() {
+void resetPerspectiveProjection() 
+{
 	// set the current matrix to GL_PROJECTION
 	glMatrixMode(GL_PROJECTION);
 	// restore previous settings
@@ -150,8 +151,7 @@ void resetPerspectiveProjection() {
 }
 
 void renderBitmapString(float x, float y, void *font,char *string)
-{
-  
+{  
   char *c;
   // set position to start drawing fonts
   glRasterPos2f(x, y);
@@ -181,8 +181,7 @@ void renderScene(void)
 
 	glLightfv(GL_LIGHT0,GL_POSITION,lPosition);
 
-// Draw ground
-
+	//Draw axis
 	glDisable(GL_LIGHTING);
 	glColor3f(1.0, 0.0, 0.0);
 	glBegin(GL_LINES);
@@ -200,6 +199,8 @@ void renderScene(void)
 		glVertex3f(0.0, 0.0, 100.0);
 	glEnd();
 	glEnable(GL_LIGHTING);
+
+	// Draw ground
 
 	glMaterialfv(GL_FRONT, GL_SPECULAR, mSpecular);
 	glMaterialfv(GL_FRONT, GL_SHININESS,mShininess);
@@ -351,16 +352,18 @@ void activeMouseMotion(int x, int y)
 }
 
 
-void mousePress(int button, int state, int x, int y) {
-
-	if (state == GLUT_DOWN) {
-//		angle2 = 0;
+void mousePress(int button, int state, int x, int y) 
+{
+	if (state == GLUT_DOWN) 
+	{
+		//		angle2 = 0;
 		deltaX = x;
 		deltaY = y;
 //		angle2Y = 0;
 		navigationMode = FLY;
 	} 
-	else if (state == GLUT_UP) {
+	else if (state == GLUT_UP) 
+	{
 		angleY = angle2Y;
 		angle = angle2;
 		navigationMode = WALK;
@@ -393,9 +396,9 @@ int main(int argc, char **argv)
 	glutCreateWindow("HeightMap");
 
 	// init terrain structures
-	if (terrainLoadFromImage("heightmap.bmp",1) != TERRAIN_OK)
+	if (terrainLoadFromImage("heightmap3.bmp",1) != TERRAIN_OK)
 		return(-1);
-	terrainScale(0,40);
+	terrainScale(0,8);
 	// register all callbacks and
 	// create display lists
 	init();
