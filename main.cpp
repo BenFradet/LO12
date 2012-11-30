@@ -2,14 +2,16 @@
 
 #include <stdio.h>
 #include <string.h>
-#include <stdlib.h>
 #include <math.h>
 #include <gl\glut.h>
 #include <gl\gl.h>
 #include <gl\glu.h>
+#include <stdlib.h>
 
 #include "terrain.h"
-#include "bitmap.h"
+#include "skybox.h"
+
+using namespace std;
 
 
 // stuff for lighting
@@ -30,9 +32,6 @@ GLfloat cOrange[] = {1.0,0.5,0.5,1.0};
 GLfloat cWhite[] = {1.0,1.0,1.0,1.0}; 
 GLfloat cGrey[] = {0.1,0.1,0.1,1.0};
 GLfloat cLightGrey[] = {0.9,0.9,0.9,1.0};
-
-
-
 
 #define FLY		1
 #define WALK	2
@@ -55,11 +54,11 @@ char s[60];
 int frame,time,timebase=0;
 char currentMode[80];
 
+Skybox* skybox;
+
 // this string keeps the last good setting 
 // for the game mode
 char gameModeString[40] = "640x480";
-
-
 
 void init();
 
@@ -106,7 +105,6 @@ void initScene()
 	glLightModeli(GL_LIGHT_MODEL_LOCAL_VIEWER,GL_TRUE);
 	glEnable(GL_LIGHTING);
 	glEnable(GL_LIGHT0);
-
 }
 
 void orientMe(float ang) {
@@ -178,9 +176,30 @@ void renderScene(void)
 			  0.0f,1.0f,0.0f);
 
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+	skybox->drawSkybox();
+
 	glLightfv(GL_LIGHT0,GL_POSITION,lPosition);
 
 // Draw ground
+
+	glDisable(GL_LIGHTING);
+	glColor3f(1.0, 0.0, 0.0);
+	glBegin(GL_LINES);
+		glVertex3f(0.0, 0.0, 0.0);
+		glVertex3f(100.0, 0.0, 0.0);
+	glEnd();
+	glColor3f(0.0, 1.0, 0.0);
+	glBegin(GL_LINES);
+		glVertex3f(0.0, 0.0, 0.0);
+		glVertex3f(0.0, 100.0, 0.0);
+	glEnd();
+	glColor3f(0.0, 0.0, 1.0);
+	glBegin(GL_LINES);
+		glVertex3f(0.0, 0.0, 0.0);
+		glVertex3f(0.0, 0.0, 100.0);
+	glEnd();
+	glEnable(GL_LIGHTING);
 
 	glMaterialfv(GL_FRONT, GL_SPECULAR, mSpecular);
 	glMaterialfv(GL_FRONT, GL_SHININESS,mShininess);
@@ -212,7 +231,6 @@ void renderScene(void)
 
 void processNormalKeys(unsigned char key, int x, int y) 
 {
-
 	if (key == 27) 
 	{
 		terrainDestroy();
@@ -350,7 +368,10 @@ void mousePress(int button, int state, int x, int y) {
 }
 
 
-void init() {
+void init() 
+{
+	skybox = new Skybox();
+	skybox->loadSkybox();
 	glutIgnoreKeyRepeat(1);
 	glutKeyboardFunc(processNormalKeys);
 	glutSpecialFunc(pressKey);
@@ -361,7 +382,6 @@ void init() {
 	glutIdleFunc(renderScene);
 	glutReshapeFunc(changeSize);
 	initScene();
-
 }
 
 int main(int argc, char **argv)
@@ -369,20 +389,18 @@ int main(int argc, char **argv)
 	glutInit(&argc, argv);
 	glutInitDisplayMode(GLUT_DEPTH | GLUT_DOUBLE | GLUT_RGBA);
 	glutInitWindowPosition(100,100);
-	glutInitWindowSize(800,600);
+	glutInitWindowSize(1200,800);
 	glutCreateWindow("HeightMap");
 
 	// init terrain structures
 	if (terrainLoadFromImage("heightmap.bmp",1) != TERRAIN_OK)
 		return(-1);
 	terrainScale(0,40);
-
-	bool loaded = loadTexture("dirt.bmp");
 	// register all callbacks and
 	// create display lists
 	init();
 
 	glutMainLoop();
 
-	return(0);
+	return 0;
 }

@@ -2,6 +2,10 @@
 #include <cstdio>
 #include <string>
 
+#include <gl\glut.h>
+#include <gl\gl.h>
+#include <gl\glu.h>
+
 using namespace std;
 
 const short BITMAP_MAGIC_NUMBER = 19778;
@@ -52,12 +56,14 @@ public:
 	int width, height;
 	unsigned short bpp;
 	string error;
+	char* filename;
 
 	Bitmap(void);
 	Bitmap(char*, int);
 	~Bitmap();
 	bool loadBmp(char*, int);
 	void convertToGray(unsigned char*);
+	bool loadTexture();
 	
 private:
 	BitmapFileHeader bmfh;

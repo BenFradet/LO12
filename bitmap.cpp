@@ -29,6 +29,8 @@ bool Bitmap::loadBmp(char* file, int terrain)
 
 	loaded = false;
 
+	this->filename = file;
+
 	if(colors != 0)
 		delete[] colors;
 	if(data != 0)
@@ -234,4 +236,28 @@ void Bitmap::convertToGray(unsigned char* tempData)
 		unsigned int current = (unsigned int)i/3.0;
 		data[current] = tempData[i]/**0.2126 + data[i+1]*0.7152 + data[i+2]*0.0722*/;
 	}
+}
+
+bool Bitmap::loadTexture()
+{
+	GLuint tex = 0;
+
+	if(this == NULL)
+		return false;
+
+	if(this->loadBmp(this->filename, 0))
+	{
+		glGenTextures(1, &tex);
+
+		glBindTexture(GL_TEXTURE_2D, tex);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+		glTexImage2D(GL_TEXTURE_2D, 0, 3, this->width, this->height, 0, GL_RGB, GL_UNSIGNED_BYTE, this->colors);
+
+		glBindTexture(GL_TEXTURE_2D, 0);
+	}
+	else
+		return false;
+
+	return true;
 }

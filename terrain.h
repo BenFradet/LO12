@@ -9,4 +9,3 @@ int terrainCreateDL(float xOffset, float yOffset, float zOffset);
 void terrainDestroy();
 int terrainScale(float min,float max);
 float terrainGetHeight(int x, int z);
-bool loadTexture(char* filename);

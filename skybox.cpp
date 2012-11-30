@@ -9,13 +9,13 @@ int Skybox::loadSkybox()
 	glGenTextures(6, tabTextures);
 
 	textures[0].loadBmp("skybox1/XN.bmp", 0);
-	/*textures[1].loadBmp("skybox1/XP.bmp", 0);
+	textures[1].loadBmp("skybox1/XP.bmp", 0);
 	textures[2].loadBmp("skybox1/YN.bmp", 0);
 	textures[3].loadBmp("skybox1/YP.bmp", 0);
 	textures[4].loadBmp("skybox1/ZN.bmp", 0);
-	textures[5].loadBmp("skybox1/ZP.bmp", 0);*/
+	textures[5].loadBmp("skybox1/ZP.bmp", 0);
 
-    for(int i=0;i<1;i++) 
+    for(int i=0;i<6;i++) 
 	{
 		glBindTexture(GL_TEXTURE_2D,tabTextures[i]);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
@@ -30,90 +30,66 @@ int Skybox::loadSkybox()
 
 void Skybox::drawSkybox()
 {
-	float t=20.0;
+	float t=10.0;
 	glDisable(GL_DEPTH_TEST);
 	glDisable(GL_LIGHTING);
 
 	glEnable(GL_TEXTURE_2D);
 
-	glPushMatrix();
+	//glPushMatrix();
 
-	/*//glLoadIdentity();
-
-	switch(type_obs)
-
-	{
-
-	case 1://lookAt
-
-		glTranslatef(lookAtParam[3], lookAtParam[4], lookAtParam[5]);
-
-		break;
-
-	case 2://polarView
-
-		glTranslatef(x, y, z);
-
-		break;
-
-	case 3://pilotView
-
-		glTranslatef(pilotParam[0], pilotParam[1], pilotParam[2]);
-
-		break;
-
-	}*/
-
+	glColor3f(1.0, 1.0, 1.0);
 	glBindTexture(GL_TEXTURE_2D, tabTextures[0]);
-	glBegin(GL_QUADS);			// X Négatif		
-		glTexCoord2f(0.0, 0.0); glVertex3f(-t,-t,-t);
-		glTexCoord2f(1.0, 0.0); glVertex3f(-t,t,-t);
+	glBegin(GL_QUADS);			// X Négatif	
+		glTexCoord2f(0.0, 1.0); glVertex3f(-t,t,-t);	
 		glTexCoord2f(1.0, 1.0); glVertex3f(-t,t,t);
-		glTexCoord2f(0.0, 1.0); glVertex3f(-t,-t,t);
+		glTexCoord2f(1.0, 0.0); glVertex3f(-t,-t,t);
+		glTexCoord2f(0.0, 0.0); glVertex3f(-t,-t,-t);
 	glEnd();
 
 	glBindTexture(GL_TEXTURE_2D, tabTextures[1]);
 	glBegin(GL_QUADS);			// X Positif
-		glTexCoord2f(0.0, 0.0); glVertex3f(t,t,-t); 	
-		glTexCoord2f(1.0, 0.0); glVertex3f(t,-t,-t);
-		glTexCoord2f(1.0, 1.0); glVertex3f(t,-t,t);
 		glTexCoord2f(0.0, 1.0); glVertex3f(t,t,t); 
+		glTexCoord2f(1.0, 1.0); glVertex3f(t,t,-t);	
+		glTexCoord2f(1.0, 0.0); glVertex3f(t,-t,-t);
+		glTexCoord2f(0.0, 0.0); glVertex3f(t,-t,t); 
 	glEnd();
 
 	glBindTexture(GL_TEXTURE_2D, tabTextures[2]);
 	glBegin(GL_QUADS);			// Y Négatif	
-		glTexCoord2f(0.0, 0.0); glVertex3f(t,-t,-t);
+		glTexCoord2f(0.0, 1.0); glVertex3f(t,t,-t); 
+		glTexCoord2f(1.0, 1.0); glVertex3f(-t,t,-t);
 		glTexCoord2f(1.0, 0.0); glVertex3f(-t,-t,-t);
-		glTexCoord2f(1.0, 1.0); glVertex3f(-t,-t,t);
-		glTexCoord2f(0.0, 1.0); glVertex3f(t,-t,t); 
+		glTexCoord2f(0.0, 0.0); glVertex3f(t,-t,-t);
 	glEnd();
 
 	glBindTexture(GL_TEXTURE_2D, tabTextures[3]);
 	glBegin(GL_QUADS);			// Y Positif		
-		glTexCoord2f(0.0, 0.0); glVertex3f(-t,t,-t);
-		glTexCoord2f(1.0, 0.0); glVertex3f(t,t,-t);
-		glTexCoord2f(1.0, 1.0); glVertex3f(t,t,t);
 		glTexCoord2f(0.0, 1.0); glVertex3f(-t,t,t);
+		glTexCoord2f(1.0, 1.0); glVertex3f(t,t,t);
+		glTexCoord2f(1.0, 0.0); glVertex3f(t,-t,t);
+		glTexCoord2f(0.0, 0.0); glVertex3f(-t,-t,t);
 	glEnd();
 
 	glBindTexture(GL_TEXTURE_2D, tabTextures[4]);
 	glBegin(GL_QUADS);			// Z Négatif		
-		glTexCoord2f(0.0, 0.0); glVertex3f(-t,t,-t);
-		glTexCoord2f(1.0, 0.0); glVertex3f(t,t,-t);
+		glTexCoord2f(0.0, 0.0); glVertex3f(-t,-t,t);
+		glTexCoord2f(1.0, 0.0); glVertex3f(t,-t,t);
 		glTexCoord2f(1.0, 1.0); glVertex3f(t,-t,-t);
 		glTexCoord2f(0.0, 1.0); glVertex3f(-t,-t,-t);
 	glEnd();
 
 	glBindTexture(GL_TEXTURE_2D, tabTextures[5]);
 	glBegin(GL_QUADS);			// Z Positif	
-		glTexCoord2d(0.0, 0.0);	glVertex3f(t, t, t);
-		glTexCoord2d(1.0, 0.0); glVertex3f(t, -t, t);
-		glTexCoord2d(1.0, 1.0);	glVertex3f(-t, -t, t);
 		glTexCoord2d(0.0, 1.0);	glVertex3f(-t, t, t);
+		glTexCoord2d(1.0, 1.0);	glVertex3f(-t, t, -t);
+		glTexCoord2d(1.0, 0.0); glVertex3f(t, t, -t);
+		glTexCoord2d(0.0, 0.0);	glVertex3f(t, t, t);
 	glEnd();
 
-	glPopMatrix();
+	//glPopMatrix();
 
+	glDisable(GL_TEXTURE_2D);
 	glEnable(GL_DEPTH_TEST);
 	glEnable(GL_LIGHTING);
 }
