@@ -1,33 +1,24 @@
-#include <math.h>
-#include <stdlib.h>
-#include <stdio.h>
-#include <gl\glut.h>
-#include <gl\gl.h>
-#include <gl\glu.h>
-
-#include "bitmap.h"
 #include "terrain.h"
 
-int Terrain::terrainGridWidth = 0;
-int Terrain::terrainGridLength = 0;
-float* Terrain::terrainHeights = NULL;
-float* Terrain::terrainColors = NULL;
-float* Terrain::terrainNormals = NULL;
+int Terrain::width = 0;
+int Terrain::length = 0;
+float* Terrain::heights = NULL;
+float* Terrain::colors = NULL;
+float* Terrain::normals = NULL;
 
-
-float* Terrain::terrainCrossProduct(int x1,int z1,int x2,int z2,int x3,int z3) 
+float* Terrain::CrossProduct(int x1,int z1,int x2,int z2,int x3,int z3) 
 {
 	float *auxNormal,v1[3],v2[3];
 		
 	v1[0] = x2-x1; 
-	v1[1] = -terrainHeights[z1 * terrainGridWidth + x1] 
-			+ terrainHeights[z2 * terrainGridWidth + x2];
+	v1[1] = -heights[z1 * width + x1] 
+			+ heights[z2 * width + x2];
 	v1[2] = z2-z1; 
 
 
 	v2[0] = x3-x1; 
-	v2[1] = -terrainHeights[z1 * terrainGridWidth + x1] 
-			+ terrainHeights[z3 * terrainGridWidth + x3];
+	v2[1] = -heights[z1 * width + x1] 
+			+ heights[z3 * width + x3];
 	v2[2] = z3-z1; 
 
 	auxNormal = (float *)malloc(sizeof(float)*3);
@@ -39,7 +30,7 @@ float* Terrain::terrainCrossProduct(int x1,int z1,int x2,int z2,int x3,int z3)
 	return(auxNormal);
 }
 
-void Terrain::terrainNormalize(float *v) 
+void Terrain::NormalizeVector(float *v) 
 {
 	double d,x,y,z;
 
@@ -54,23 +45,23 @@ void Terrain::terrainNormalize(float *v)
 	v[2] = z / d;
 }
 
-void Terrain::terrainAddVector(float *a, float *b) 
+void Terrain::AddVector(float *a, float *b) 
 {
 	a[0] += b[0];
 	a[1] += b[1];
 	a[2] += b[2];
 }
 
-void Terrain::terrainComputeNormals() 
+void Terrain::ComputeNormals() 
 {
 	float *norm1,*norm2,*norm3,*norm4; 
 	int i,j,k;
 	
-	if (terrainNormals == NULL)
+	if (normals == NULL)
 		return;
 
-	for(i = 0; i < terrainGridLength; i++)
-		for(j = 0; j < terrainGridWidth; j++) {
+	for(i = 0; i < length; i++)
+		for(j = 0; j < width; j++) {
 			norm1 = NULL;
 			norm2 = NULL;
 			norm3 = NULL;
@@ -78,88 +69,88 @@ void Terrain::terrainComputeNormals()
 
 			// normals for the four corners
 			if (i == 0 && j == 0) {
-				norm1 = terrainCrossProduct(0,0, 0,1, 1,0);	
-				terrainNormalize(norm1);				
+				norm1 = CrossProduct(0,0, 0,1, 1,0);	
+				NormalizeVector(norm1);				
 			}
-			else if (j == terrainGridWidth-1 && i == terrainGridLength-1) {
-				norm1 = terrainCrossProduct(i,j, j,i-1, j-1,i);	
-				terrainNormalize(norm1);				
+			else if (j == width-1 && i == length-1) {
+				norm1 = CrossProduct(i,j, j,i-1, j-1,i);	
+				NormalizeVector(norm1);				
 			}
-			else if (j == 0 && i == terrainGridLength-1) {
-				norm1 = terrainCrossProduct(i,j, j,i-1, j+1,i);	
-				terrainNormalize(norm1);				
+			else if (j == 0 && i == length-1) {
+				norm1 = CrossProduct(i,j, j,i-1, j+1,i);	
+				NormalizeVector(norm1);				
 			}
-			else if (j == terrainGridWidth-1 && i == 0) {
-				norm1 = terrainCrossProduct(i,j, j,i+1, j-1,i);	
-				terrainNormalize(norm1);				
+			else if (j == width-1 && i == 0) {
+				norm1 = CrossProduct(i,j, j,i+1, j-1,i);	
+				NormalizeVector(norm1);				
 			}
 
 			// normals for the borders
 			else if (i == 0) {
-				norm1 = terrainCrossProduct(j,0, j-1,0, j,1);
-				terrainNormalize(norm1);
-				norm2 = terrainCrossProduct(j,0,j,1,j+1,0);
-				terrainNormalize(norm2);
+				norm1 = CrossProduct(j,0, j-1,0, j,1);
+				NormalizeVector(norm1);
+				norm2 = CrossProduct(j,0,j,1,j+1,0);
+				NormalizeVector(norm2);
 			}
 			else if (j == 0) {
-				norm1 = terrainCrossProduct(0,i, 1,i, 0,i-1);
-				terrainNormalize(norm1);
-				norm2 = terrainCrossProduct(0,i, 0,i+1, 1,i);
-				terrainNormalize(norm2);
+				norm1 = CrossProduct(0,i, 1,i, 0,i-1);
+				NormalizeVector(norm1);
+				norm2 = CrossProduct(0,i, 0,i+1, 1,i);
+				NormalizeVector(norm2);
 			}
-			else if (i == terrainGridLength) {
-				norm1 = terrainCrossProduct(j,i, j,i-1, j+1,i);
-				terrainNormalize(norm1);
-				norm2 = terrainCrossProduct(j,i, j+1,i, j,i-1);
-				terrainNormalize(norm2);
+			else if (i == length) {
+				norm1 = CrossProduct(j,i, j,i-1, j+1,i);
+				NormalizeVector(norm1);
+				norm2 = CrossProduct(j,i, j+1,i, j,i-1);
+				NormalizeVector(norm2);
 			}
-			else if (j == terrainGridWidth) {
-				norm1 = terrainCrossProduct(j,i, j,i-1, j-1,i);
-				terrainNormalize(norm1);
-				norm2 = terrainCrossProduct(j,i, j-1,i, j,i+1);
-				terrainNormalize(norm2);
+			else if (j == width) {
+				norm1 = CrossProduct(j,i, j,i-1, j-1,i);
+				NormalizeVector(norm1);
+				norm2 = CrossProduct(j,i, j-1,i, j,i+1);
+				NormalizeVector(norm2);
 			}
 
 			// normals for the interior
 			else {
-				norm1 = terrainCrossProduct(j,i, j-1,i, j,i+1);
-				terrainNormalize(norm1);
-				norm2 = terrainCrossProduct(j,i, j,i+1, j+1,i);
-				terrainNormalize(norm2);
-				norm3 = terrainCrossProduct(j,i, j+1,i, j,i-1);
-				terrainNormalize(norm3);
-				norm4 = terrainCrossProduct(j,i, j,i-1, j-1,i);
-				terrainNormalize(norm4);
+				norm1 = CrossProduct(j,i, j-1,i, j,i+1);
+				NormalizeVector(norm1);
+				norm2 = CrossProduct(j,i, j,i+1, j+1,i);
+				NormalizeVector(norm2);
+				norm3 = CrossProduct(j,i, j+1,i, j,i-1);
+				NormalizeVector(norm3);
+				norm4 = CrossProduct(j,i, j,i-1, j-1,i);
+				NormalizeVector(norm4);
 			}
 			if (norm2 != NULL) {
-				terrainAddVector(norm1,norm2);
+				AddVector(norm1,norm2);
 				free(norm2);
 			}
 			if (norm3 != NULL) {
-				terrainAddVector(norm1,norm3);
+				AddVector(norm1,norm3);
 				free(norm3);
 			}
 			if (norm4 != NULL) {
-				terrainAddVector(norm1,norm4);
+				AddVector(norm1,norm4);
 				free(norm4);
 			}
-			terrainNormalize(norm1);
+			NormalizeVector(norm1);
 			norm1[2] = - norm1[2];
 			for (k = 0; k< 3; k++) 
-				terrainNormals[3*(i*terrainGridWidth + j) + k] = norm1[k];
+				normals[3*(i*width + j) + k] = norm1[k];
 			free(norm1);
 		}
 
 }
 
-int Terrain::terrainLoadFromImage(char* filename, int normals)
+int Terrain::LoadFromImage(char* filename, int normal)
 {
 	Bitmap* bm = new Bitmap(filename, 1);
 	int mode;
 	float pointHeight;
 
-	if(terrainHeights != NULL)
-		terrainDestroy();
+	if(heights != NULL)
+		Destroy();
 
 	if(!bm->loadBmp(filename, 1))
 		return (TERRAIN_ERROR_LOADING_IMAGE);
@@ -169,43 +160,43 @@ int Terrain::terrainLoadFromImage(char* filename, int normals)
 	if(mode != 3)
 		return TERRAIN_ERROR_LOADING_IMAGE;
 
-	terrainGridWidth = bm->width;
-	terrainGridLength = bm->height;
+	width = bm->width;
+	length = bm->height;
 
-	terrainHeights = (float*)malloc(terrainGridWidth * terrainGridLength * sizeof(float));
-	if(terrainHeights == NULL)
+	heights = (float*)malloc(width * length * sizeof(float));
+	if(heights == NULL)
 		return (TERRAIN_ERROR_MEMORY_PROBLEM);
 
-	if(normals)
+	if(normal)
 	{
-		terrainNormals = (float*)malloc(terrainGridWidth * terrainGridLength * sizeof(float) * 3);
-		if(terrainNormals == NULL)
+		normals = (float*)malloc(width * length * sizeof(float) * 3);
+		if(normals == NULL)
 			return (TERRAIN_ERROR_MEMORY_PROBLEM);
 	}
 	else
-		terrainNormals = NULL;
+		normals = NULL;
 
-	for(int i = 0; i<terrainGridWidth; i++)
-		for(int j = 0; j<terrainGridLength; j++)
+	for(int i = 0; i<width; i++)
+		for(int j = 0; j<length; j++)
 		{
-			pointHeight = (float)bm->data[i*terrainGridWidth + j] / 256.0;
-			terrainHeights[i * terrainGridWidth + j] = pointHeight;
+			pointHeight = (float)bm->data[i*width + j] / 256.0;
+			heights[i * width + j] = pointHeight;
 		}
 
 	if(normals)
-		terrainComputeNormals();
+		ComputeNormals();
 
 	//delete bm;
 
 	return TERRAIN_OK;
 }
 
-int Terrain::terrainScale(float min,float max) 
+int Terrain::Scale(float min,float max) 
 {
 	float amp,aux,min1,max1,height;
 	int total,i;
 
-	if (terrainHeights == NULL)
+	if (heights == NULL)
 		return(TERRAIN_ERROR_NOT_INITIALISED);
 
 	if (min > max) 
@@ -216,112 +207,244 @@ int Terrain::terrainScale(float min,float max)
 	}
 
 	amp = max - min;
-	total = terrainGridWidth * terrainGridLength;
+	total = width * length;
 
-	min1 = terrainHeights[0];
-	max1 = terrainHeights[0];
+	min1 = heights[0];
+	max1 = heights[0];
 	for(i=1;i < total ; i++) 
 	{
-		if (terrainHeights[i] > max1)
-			max1 = terrainHeights[i];
-		if (terrainHeights[i] < min1)
-			min1 = terrainHeights[i];
+		if (heights[i] > max1)
+			max1 = heights[i];
+		if (heights[i] < min1)
+			min1 = heights[i];
 	}
-	for(i=0;i < total; i++) {
-		height = (terrainHeights[i] - min1) / (max1-min1);
-		terrainHeights[i] = height * amp - min;
+	for(i=0;i < total; i++) 
+	{
+		height = (heights[i] - min1) / (max1-min1);
+		heights[i] = height * amp - min;
 	}
 	printf("%f %f %f %f %f %f\n",min,max,min1,max1,amp,height);
-	if (terrainNormals != NULL)
-		terrainComputeNormals();
+	if (normals != NULL)
+		ComputeNormals();
 	return(TERRAIN_OK);
 }
 	
 
-int Terrain::terrainCreateDL(float xOffset, float yOffset, float zOffset) 
+int Terrain::Create(float xOffset, float yOffset, float zOffset) 
 {
 	GLuint terrainDL;
 	float startW,startL;
 	int i,j;
 
-	startW = terrainGridWidth / 2.0 - terrainGridWidth;
-	startL = - terrainGridLength / 2.0 + terrainGridLength;
+	GLuint texName = LoadTextures();
+
+	startW = width / 2.0 - width;
+	startL = - length / 2.0 + length;
 
 	terrainDL = glGenLists(1);
 
 	glNewList(terrainDL,GL_COMPILE);
-	if (terrainNormals != NULL && terrainColors != NULL) 
+	if (normals != NULL && colors != NULL) 
 	{
 		glColorMaterial(GL_FRONT, GL_DIFFUSE);
 		glEnable(GL_COLOR_MATERIAL);
 	}
 
-	for (i = 0 ; i < terrainGridLength-1; i++) 
+	for (i = 0 ; i < length-1; i++) 
 	{
+		glEnable(GL_TEXTURE_2D);
+		glBindTexture(GL_TEXTURE_2D, texName);
+
 		glBegin(GL_TRIANGLE_STRIP);
-		for (j = 0;j < terrainGridWidth; j++) 
+		for (j = 0;j < width; j++) 
 		{
 		
-			if (terrainColors != NULL) 
-				glColor3f(terrainColors[3*((i+1)*terrainGridWidth + j)],
-						  terrainColors[3*((i+1)*terrainGridWidth + j)+1],
-						  terrainColors[3*((i+1)*terrainGridWidth + j)+2]);
-			if (terrainNormals != NULL)
-				glNormal3f(terrainNormals[3*((i+1)*terrainGridWidth + j)],
-						  terrainNormals[3*((i+1)*terrainGridWidth + j)+1],
-						  terrainNormals[3*((i+1)*terrainGridWidth + j)+2]);
+			if (colors != NULL) 
+				glColor3f(colors[3*((i+1)*width + j)],
+						  colors[3*((i+1)*width + j)+1],
+						  colors[3*((i+1)*width + j)+2]);
+			if (normals != NULL)
+				glNormal3f(normals[3*((i+1)*width + j)],
+						  normals[3*((i+1)*width + j)+1],
+						  normals[3*((i+1)*width + j)+2]);
+
+			glTexCoord2f((float)j, (float)i);
 			glVertex3f(
 				startW + j + xOffset,
-				terrainHeights[(i+1)*terrainGridWidth + (j)] + yOffset,
+				heights[(i+1)*width + (j)] + yOffset,
 				startL - (i+1) + zOffset);
 
-			if (terrainColors != NULL) 
-				glColor3f(terrainColors[3*(i*terrainGridWidth + j)],
-						  terrainColors[3*(i*terrainGridWidth + j)+1],
-						  terrainColors[3*(i*terrainGridWidth + j)+2]);
-			if (terrainNormals != NULL)
-				glNormal3f(terrainNormals[3*(i*terrainGridWidth + j)],
-						  terrainNormals[3*(i*terrainGridWidth + j)+1],
-						  terrainNormals[3*(i*terrainGridWidth + j)+2]);
+			if (colors != NULL) 
+				glColor3f(colors[3*(i*width + j)],
+						  colors[3*(i*width + j)+1],
+						  colors[3*(i*width + j)+2]);
+			if (normals != NULL)
+				glNormal3f(normals[3*(i*width + j)],
+						  normals[3*(i*width + j)+1],
+						  normals[3*(i*width + j)+2]);
 
-			//glEnable(GL_TEXTURE_2D);
-
+			glTexCoord2i(j+1, i+1);
 			glVertex3f(
 				startW + j + xOffset, 
-				terrainHeights[(i)*terrainGridWidth + j] + yOffset,
+				heights[(i)*width + j] + yOffset,
 				startL - i + zOffset);					
 		}
 		glEnd();
+		glDisable(GL_TEXTURE_2D);
 	}
 	glEndList();
 	return(terrainDL);
 }
 
-float Terrain::terrainGetHeight(int x, int z) 
+float Terrain::GetHeight(int x, int z) 
 {
 	int xt,zt;
 
-	if (terrainHeights == NULL) 
+	if (heights == NULL) 
 			return(0.0);
 
-	xt = x + terrainGridWidth /2;
-	zt = terrainGridWidth - (z + terrainGridLength /2);
+	xt = x + width /2;
+	zt = width - (z + length /2);
 
-	if ((xt > terrainGridWidth) || (zt > terrainGridLength) || (xt < 0) || (zt < 0))
+	if ((xt > width) || (zt > length) || (xt < 0) || (zt < 0))
 		return(0.0);
 
-	return(terrainHeights[zt * terrainGridWidth + xt]);
+	return(heights[zt * width + xt]);
 }
 
 
-void Terrain::terrainDestroy() 
+void Terrain::Destroy() 
 {
-	if (terrainHeights != NULL)
-		free(terrainHeights);
+	if (heights != NULL)
+		free(heights);
 
-	if (terrainColors != NULL)
-		free(terrainColors);
+	if (colors != NULL)
+		free(colors);
 
-	if (terrainNormals != NULL)
-		free(terrainNormals);
+	if (normals != NULL)
+		free(normals);
+}
+
+void Terrain::WeightsBlending(float* percent, unsigned char height)
+{
+	int add = height + (rand()%30) - 15;
+
+	if(add < 0)
+		add = 0;
+	if(add > 255)
+		add = 255;
+
+	height = add;
+
+	//all dirt
+	if(height < 60)
+	{
+		percent[0] = 1.0f;
+		percent[1] = 0.0f;
+		percent[2] = 0.0f;
+		percent[3] = 0.0f;
+	}
+	else if(height < 90)
+	{
+		percent[0] = 1.0f - (height - 40.0f)/50.0f;
+		percent[1] = (height - 40.0f)/50.0f;
+		percent[2] = 0.0f;
+		percent[3] = 0.0f;
+	}//all grass
+	else if(height < 120)
+	{
+		percent[0] = 0.0f;
+		percent[1] = 1.0f;
+		percent[2] = 0.0f;
+		percent[3] = 0.0f;
+	}
+	else if(height < 150)
+	{
+		percent[0] = 0.0f;
+		percent[1] = 1.0f - (height - 90.0f)/60.0f;
+		percent[2] = (height - 90.0f)/60.0f;
+		percent[3] = 0.0f;
+	}//all rock
+	else if(height < 180)
+	{
+		percent[0] = 0.0f;
+		percent[1] = 0.0f;
+		percent[2] = 1.0f;
+		percent[3] = 0.0f;
+	}
+	else if(height < 210)
+	{
+		percent[0] = 0.0f;
+		percent[1] = 0.0f;
+		percent[2] = 1.0f - (height - 150.0f)/60.0f;
+		percent[3] = (height - 150.0f)/60.0f;
+	}//all snow
+	else
+	{
+		percent[0] = 0.0f;
+		percent[1] = 0.0f;
+		percent[2] = 0.0f;
+		percent[3] = 1.0f;
+	}
+}
+
+GLuint Terrain::LoadTextures()
+{
+	float* percent = new float[4];
+	double r, g, b;
+	int tmpi, tmpj;
+
+	GLuint texName;
+
+	Bitmap* tex = new Bitmap();
+	tex->data = new unsigned char[width * length * 3];
+	tex->width = width;
+	tex->height = length;
+
+	Bitmap* dirt = new Bitmap("terrainTextures/dirt.bmp", 0);
+	Bitmap* grass = new Bitmap("terrainTextures/grass.bmp", 0);
+	Bitmap* rock = new Bitmap("terrainTextures/rock.bmp", 0);
+	Bitmap* snow = new Bitmap("terrainTextures/snow.bmp", 0);
+	if(dirt == NULL || grass == NULL || rock == NULL || snow == NULL)
+		cout<<"Probleme avec l'allocation des textures"<<endl;
+	for(int i = 0; i < length; i++)
+		for(int j = 0; j < width; j++)
+		{
+			WeightsBlending(percent, (int)(GetHeight(i, j)*256.0));
+			
+			tmpi = i%dirt->height;
+			tmpj = j%dirt->width;
+			r = percent[0] * dirt->data[tmpj * width + tmpi];
+			g = percent[0] * dirt->data[tmpj * width + tmpi + 1];
+			b = percent[0] * dirt->data[tmpj * width + tmpi + 2];
+
+			r += percent[1] * dirt->data[tmpj * width + tmpi];
+			g += percent[1] * dirt->data[tmpj * width + tmpi + 1];
+			b += percent[1] * dirt->data[tmpj * width + tmpi + 2];
+
+			r += percent[2] * rock->data[tmpj * width + tmpi];
+			g += percent[2] * rock->data[tmpj * width + tmpi + 1];
+			b += percent[2] * rock->data[tmpj * width + tmpi + 2];
+
+			r += percent[3] * snow->data[tmpj * width + tmpi];
+			g += percent[3] * snow->data[tmpj * width + tmpi + 1];
+			b += percent[3] * snow->data[tmpj * width + tmpi + 2];
+
+			tex->data[i*3*tex->width + j*3] = r;
+			tex->data[i*3*tex->width + j*3 + 1] = g;
+			tex->data[i*3*tex->width + j*3 + 2] = b;
+		}
+
+	glGenTextures(1, &texName);
+	glBindTexture(GL_TEXTURE_2D, texName);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_NEAREST);
+	gluBuild2DMipmaps(GL_TEXTURE_2D, 3, width, length, GL_RGB, GL_UNSIGNED_BYTE, tex->data);
+
+	delete dirt;
+	delete grass;
+	delete rock;
+	delete snow;
+
+	return texName;
 }

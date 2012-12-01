@@ -1,3 +1,6 @@
+#ifndef SKYBOX_H
+#define SKYBOX_H
+
 #include "bitmap.h"
 
 using namespace std;
@@ -10,3 +13,5 @@ public:
 	int loadSkybox();
 	void drawSkybox();
 };
+
+#endif

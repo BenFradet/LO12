@@ -1,3 +1,6 @@
+#ifndef BITMAP_H
+#define BITMAP_H
+
 #include <iostream>
 #include <cstdio>
 #include <string>
@@ -7,6 +10,8 @@
 #include <gl\glu.h>
 
 using namespace std;
+
+#define _CRT_SECURE_NO_DEPRECATE
 
 const short BITMAP_MAGIC_NUMBER = 19778;
 const int RGB_BYTE_SIZE = 3;
@@ -76,3 +81,5 @@ private:
 	bool convert24(unsigned char*);
 	bool convert8(unsigned char*);
 };
+
+#endif

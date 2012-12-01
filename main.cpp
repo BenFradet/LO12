@@ -97,8 +97,8 @@ void initScene()
 	glEnable(GL_DEPTH_TEST);
 	glEnable(GL_CULL_FACE);
 	glCullFace(GL_BACK);
-	terrainDL = terrain->terrainCreateDL(0,0,0);
-	y = terrain->terrainGetHeight(0,0) + 1.75;
+	terrainDL = terrain->Create(0,0,0);
+	y = terrain->GetHeight(0,0) + 1.75;
 	
 	glLightfv(GL_LIGHT0,GL_AMBIENT,lAmbient);
 	glLightfv(GL_LIGHT0,GL_DIFFUSE,lDiffuse);
@@ -235,7 +235,7 @@ void processNormalKeys(unsigned char key, int x, int y)
 {
 	if (key == 27) 
 	{
-		terrain->terrainDestroy();
+		terrain->Destroy();
 		exit(0);
 	}
 }
@@ -376,6 +376,7 @@ void init()
 {
 	skybox = new Skybox();
 	skybox->loadSkybox();
+
 	terrain = new Terrain();
 
 	glutIgnoreKeyRepeat(1);
@@ -399,9 +400,9 @@ int main(int argc, char **argv)
 	glutCreateWindow("HeightMap");
 
 	// init terrain structures
-	if (terrain->terrainLoadFromImage("heightmap3.bmp",1) != TERRAIN_OK)
+	if (terrain->LoadFromImage("heightmaps/heightmap.bmp",1) != TERRAIN_OK)
 		return(-1);
-	terrain->terrainScale(0,8);
+	terrain->Scale(0,30);
 	// register all callbacks and
 	// create display lists
 	init();
