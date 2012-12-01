@@ -55,6 +55,7 @@ int frame,time,timebase=0;
 char currentMode[80];
 
 Skybox* skybox;
+Terrain* terrain;
 
 // this string keeps the last good setting 
 // for the game mode
@@ -96,8 +97,8 @@ void initScene()
 	glEnable(GL_DEPTH_TEST);
 	glEnable(GL_CULL_FACE);
 	glCullFace(GL_BACK);
-	terrainDL = terrainCreateDL(0,0,0);
-	y = terrainGetHeight(0,0) + 1.75;
+	terrainDL = terrain->terrainCreateDL(0,0,0);
+	y = terrain->terrainGetHeight(0,0) + 1.75;
 	
 	glLightfv(GL_LIGHT0,GL_AMBIENT,lAmbient);
 	glLightfv(GL_LIGHT0,GL_DIFFUSE,lDiffuse);
@@ -234,7 +235,7 @@ void processNormalKeys(unsigned char key, int x, int y)
 {
 	if (key == 27) 
 	{
-		terrainDestroy();
+		terrain->terrainDestroy();
 		exit(0);
 	}
 }
@@ -375,6 +376,8 @@ void init()
 {
 	skybox = new Skybox();
 	skybox->loadSkybox();
+	terrain = new Terrain();
+
 	glutIgnoreKeyRepeat(1);
 	glutKeyboardFunc(processNormalKeys);
 	glutSpecialFunc(pressKey);
@@ -396,9 +399,9 @@ int main(int argc, char **argv)
 	glutCreateWindow("HeightMap");
 
 	// init terrain structures
-	if (terrainLoadFromImage("heightmap3.bmp",1) != TERRAIN_OK)
+	if (terrain->terrainLoadFromImage("heightmap3.bmp",1) != TERRAIN_OK)
 		return(-1);
-	terrainScale(0,8);
+	terrain->terrainScale(0,8);
 	// register all callbacks and
 	// create display lists
 	init();

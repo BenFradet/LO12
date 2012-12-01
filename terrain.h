@@ -4,16 +4,21 @@
 #define TERRAIN_ERROR_NOT_INITIALISED	-1
 #define TERRAIN_OK						 0
 
-int terrainLoadFromImage(char *filename, int normals);
-int terrainCreateDL(float xOffset, float yOffset, float zOffset);
-void terrainDestroy();
-int terrainScale(float min,float max);
-float terrainGetHeight(int x, int z);
-
 class Terrain
 {
-	int min, max;
 public:
-	Terrain();
-	~Terrain();
+	static int terrainGridWidth, terrainGridLength;
+	static float *terrainHeights;
+	static float *terrainColors;
+	static float *terrainNormals;
+
+	int terrainLoadFromImage(char *filename, int normals);
+	int terrainCreateDL(float xOffset, float yOffset, float zOffset);
+	void terrainDestroy();
+	int terrainScale(float min,float max);
+	float terrainGetHeight(int x, int z);
+	float* terrainCrossProduct(int, int, int, int, int, int);
+	void terrainNormalize(float *v);
+	void terrainAddVector(float *a, float *b);
+	void terrainComputeNormals();
 };

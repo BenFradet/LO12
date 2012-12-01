@@ -8,13 +8,14 @@
 #include "bitmap.h"
 #include "terrain.h"
 
-static int terrainGridWidth ,terrainGridLength;
-static float *terrainHeights = NULL;
-static float *terrainColors = NULL;
-static float *terrainNormals = NULL;
+int Terrain::terrainGridWidth = 0;
+int Terrain::terrainGridLength = 0;
+float* Terrain::terrainHeights = NULL;
+float* Terrain::terrainColors = NULL;
+float* Terrain::terrainNormals = NULL;
 
 
-float *terrainCrossProduct(int x1,int z1,int x2,int z2,int x3,int z3) 
+float* Terrain::terrainCrossProduct(int x1,int z1,int x2,int z2,int x3,int z3) 
 {
 	float *auxNormal,v1[3],v2[3];
 		
@@ -38,7 +39,7 @@ float *terrainCrossProduct(int x1,int z1,int x2,int z2,int x3,int z3)
 	return(auxNormal);
 }
 
-void terrainNormalize(float *v) 
+void Terrain::terrainNormalize(float *v) 
 {
 	double d,x,y,z;
 
@@ -53,14 +54,14 @@ void terrainNormalize(float *v)
 	v[2] = z / d;
 }
 
-void terrainAddVector(float *a, float *b) 
+void Terrain::terrainAddVector(float *a, float *b) 
 {
 	a[0] += b[0];
 	a[1] += b[1];
 	a[2] += b[2];
 }
 
-void terrainComputeNormals() 
+void Terrain::terrainComputeNormals() 
 {
 	float *norm1,*norm2,*norm3,*norm4; 
 	int i,j,k;
@@ -151,7 +152,7 @@ void terrainComputeNormals()
 
 }
 
-int terrainLoadFromImage(char* filename, int normals)
+int Terrain::terrainLoadFromImage(char* filename, int normals)
 {
 	Bitmap* bm = new Bitmap(filename, 1);
 	int mode;
@@ -199,7 +200,7 @@ int terrainLoadFromImage(char* filename, int normals)
 	return TERRAIN_OK;
 }
 
-int terrainScale(float min,float max) 
+int Terrain::terrainScale(float min,float max) 
 {
 	float amp,aux,min1,max1,height;
 	int total,i;
@@ -230,14 +231,14 @@ int terrainScale(float min,float max)
 		height = (terrainHeights[i] - min1) / (max1-min1);
 		terrainHeights[i] = height * amp - min;
 	}
-printf("%f %f %f %f %f %f\n",min,max,min1,max1,amp,height);
+	printf("%f %f %f %f %f %f\n",min,max,min1,max1,amp,height);
 	if (terrainNormals != NULL)
 		terrainComputeNormals();
 	return(TERRAIN_OK);
 }
 	
 
-int terrainCreateDL(float xOffset, float yOffset, float zOffset) 
+int Terrain::terrainCreateDL(float xOffset, float yOffset, float zOffset) 
 {
 	GLuint terrainDL;
 	float startW,startL;
@@ -296,7 +297,7 @@ int terrainCreateDL(float xOffset, float yOffset, float zOffset)
 	return(terrainDL);
 }
 
-float terrainGetHeight(int x, int z) 
+float Terrain::terrainGetHeight(int x, int z) 
 {
 	int xt,zt;
 
@@ -313,7 +314,7 @@ float terrainGetHeight(int x, int z)
 }
 
 
-void terrainDestroy() 
+void Terrain::terrainDestroy() 
 {
 	if (terrainHeights != NULL)
 		free(terrainHeights);
