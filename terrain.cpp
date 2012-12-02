@@ -186,8 +186,6 @@ int Terrain::LoadFromImage(char* filename, int normal)
 	if(normals)
 		ComputeNormals();
 
-	//delete bm;
-
 	return TERRAIN_OK;
 }
 
@@ -234,9 +232,8 @@ int Terrain::Create(float xOffset, float yOffset, float zOffset)
 {
 	GLuint terrainDL;
 	float startW,startL;
-	int i,j;
 
-	GLuint texName = LoadTextures();
+	GLuint texName; //= LoadTextures();
 
 	startW = width / 2.0 - width;
 	startL = - length / 2.0 + length;
@@ -250,44 +247,42 @@ int Terrain::Create(float xOffset, float yOffset, float zOffset)
 		glEnable(GL_COLOR_MATERIAL);
 	}
 
-	for (i = 0 ; i < length-1; i++) 
+	Bitmap* dirt = new Bitmap("terrainTextures/dirt.bmp", 0);
+	glGenTextures(1, &texName);
+	glBindTexture(GL_TEXTURE_2D, texName);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_NEAREST);
+	gluBuild2DMipmaps(GL_TEXTURE_2D, 3, width, length, GL_RGB, GL_UNSIGNED_BYTE, dirt->data);
+
+	for (int i = 0 ; i < length-1; i++) 
 	{
 		glEnable(GL_TEXTURE_2D);
 		glBindTexture(GL_TEXTURE_2D, texName);
-
 		glBegin(GL_TRIANGLE_STRIP);
-		for (j = 0;j < width; j++) 
+		for (int j = 0;j < width; j++) 
 		{
 		
 			if (colors != NULL) 
-				glColor3f(colors[3*((i+1)*width + j)],
-						  colors[3*((i+1)*width + j)+1],
-						  colors[3*((i+1)*width + j)+2]);
+				glColor3f(colors[3*((i+1)*width + j)], colors[3*((i+1)*width + j)+1], colors[3*((i+1)*width + j)+2]);
 			if (normals != NULL)
-				glNormal3f(normals[3*((i+1)*width + j)],
-						  normals[3*((i+1)*width + j)+1],
-						  normals[3*((i+1)*width + j)+2]);
-
-			glTexCoord2f((float)j, (float)i);
-			glVertex3f(
-				startW + j + xOffset,
-				heights[(i+1)*width + (j)] + yOffset,
-				startL - (i+1) + zOffset);
+				glNormal3f(normals[3*((i+1)*width + j)], normals[3*((i+1)*width + j)+1], normals[3*((i+1)*width + j)+2]);
 
 			if (colors != NULL) 
-				glColor3f(colors[3*(i*width + j)],
-						  colors[3*(i*width + j)+1],
-						  colors[3*(i*width + j)+2]);
+				glColor3f(colors[3*(i*width + j)], colors[3*(i*width + j)+1], colors[3*(i*width + j)+2]);
 			if (normals != NULL)
-				glNormal3f(normals[3*(i*width + j)],
-						  normals[3*(i*width + j)+1],
-						  normals[3*(i*width + j)+2]);
+				glNormal3f(normals[3*(i*width + j)], normals[3*(i*width + j)+1], normals[3*(i*width + j)+2]);
 
-			glTexCoord2i(j+1, i+1);
-			glVertex3f(
-				startW + j + xOffset, 
-				heights[(i)*width + j] + yOffset,
-				startL - i + zOffset);					
+			glTexCoord2f(j, i+1);
+			glVertex3f(startW + j + xOffset, heights[(i+1)*width + (j)] + yOffset, startL - (i+1) + zOffset);
+
+			glTexCoord2f(j, i);
+			glVertex3f(startW + j + xOffset, heights[(i)*width + j] + yOffset, startL - i + zOffset);
+
+			/*glTexCoord2f(j+1, i);
+			glVertex3f(startW + j + 1 + xOffset, heights[i*width + j + 1] + yOffset, startL - i + zOffset);
+
+			glTexCoord2f(j+1, i+1);
+			glVertex3f(startW + j + 1 + xOffset, heights[(i+1)*width + j + 1] + yOffset, startL - i + zOffset);*/
 		}
 		glEnd();
 		glDisable(GL_TEXTURE_2D);
@@ -410,7 +405,7 @@ GLuint Terrain::LoadTextures()
 	for(int i = 0; i < length; i++)
 		for(int j = 0; j < width; j++)
 		{
-			WeightsBlending(percent, (int)(GetHeight(i, j)*256.0));
+			WeightsBlending(percent, (int)(GetHeight(i, j)*255.0));
 			
 			tmpi = i%dirt->height;
 			tmpj = j%dirt->width;
