@@ -233,7 +233,7 @@ int Terrain::Create(float xOffset, float yOffset, float zOffset)
 	GLuint terrainDL;
 	float startW,startL;
 
-	GLuint texName; //= LoadTextures();
+	GLuint texName = LoadTextures();
 
 	startW = width / 2.0 - width;
 	startL = - length / 2.0 + length;
@@ -247,12 +247,12 @@ int Terrain::Create(float xOffset, float yOffset, float zOffset)
 		glEnable(GL_COLOR_MATERIAL);
 	}
 
-	Bitmap* dirt = new Bitmap("terrainTextures/dirt.bmp", 0);
+	/*Bitmap* dirt = new Bitmap("terrainTextures/dirt.bmp", 0);
 	glGenTextures(1, &texName);
 	glBindTexture(GL_TEXTURE_2D, texName);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_NEAREST);
-	gluBuild2DMipmaps(GL_TEXTURE_2D, 3, width, length, GL_RGB, GL_UNSIGNED_BYTE, dirt->data);
+	gluBuild2DMipmaps(GL_TEXTURE_2D, 3, width, length, GL_RGB, GL_UNSIGNED_BYTE, dirt->data);*/
 
 	for (int i = 0 ; i < length-1; i++) 
 	{
@@ -272,10 +272,16 @@ int Terrain::Create(float xOffset, float yOffset, float zOffset)
 			if (normals != NULL)
 				glNormal3f(normals[3*(i*width + j)], normals[3*(i*width + j)+1], normals[3*(i*width + j)+2]);
 
-			glTexCoord2f(j, i+1);
+			/*if(i%2 == 0)
+				glTexCoord2f(j+1, i);
+			else*/
+				glTexCoord2f(j, (i+1));
 			glVertex3f(startW + j + xOffset, heights[(i+1)*width + (j)] + yOffset, startL - (i+1) + zOffset);
 
-			glTexCoord2f(j, i);
+			/*if(j%2 == 0)
+				glTexCoord2f(j, i);
+			else*/
+				glTexCoord2f(j, i);
 			glVertex3f(startW + j + xOffset, heights[(i)*width + j] + yOffset, startL - i + zOffset);
 
 			/*glTexCoord2f(j+1, i);
@@ -387,7 +393,6 @@ GLuint Terrain::LoadTextures()
 {
 	float* percent = new float[4];
 	double r, g, b;
-	int tmpi, tmpj;
 
 	GLuint texName;
 
@@ -405,25 +410,23 @@ GLuint Terrain::LoadTextures()
 	for(int i = 0; i < length; i++)
 		for(int j = 0; j < width; j++)
 		{
-			WeightsBlending(percent, (int)(GetHeight(i, j)*255.0));
-			
-			tmpi = i%dirt->height;
-			tmpj = j%dirt->width;
-			r = percent[0] * dirt->data[tmpj * width + tmpi];
-			g = percent[0] * dirt->data[tmpj * width + tmpi + 1];
-			b = percent[0] * dirt->data[tmpj * width + tmpi + 2];
+			WeightsBlending(percent, (int)(GetHeight(j, i)));
 
-			r += percent[1] * dirt->data[tmpj * width + tmpi];
-			g += percent[1] * dirt->data[tmpj * width + tmpi + 1];
-			b += percent[1] * dirt->data[tmpj * width + tmpi + 2];
+			r = percent[0] * dirt->data[j * width + i];
+			g = percent[0] * dirt->data[j * width + i + 1];
+			b = percent[0] * dirt->data[j * width + i + 2];
 
-			r += percent[2] * rock->data[tmpj * width + tmpi];
-			g += percent[2] * rock->data[tmpj * width + tmpi + 1];
-			b += percent[2] * rock->data[tmpj * width + tmpi + 2];
+			r += percent[1] * grass->data[j * width + i];
+			g += percent[1] * grass->data[j * width + i + 1];
+			b += percent[1] * grass->data[j * width + i + 2];
 
-			r += percent[3] * snow->data[tmpj * width + tmpi];
-			g += percent[3] * snow->data[tmpj * width + tmpi + 1];
-			b += percent[3] * snow->data[tmpj * width + tmpi + 2];
+			r += percent[2] * rock->data[j * width + i];
+			g += percent[2] * rock->data[j * width + i + 1];
+			b += percent[2] * rock->data[j * width + i + 2];
+
+			r += percent[3] * snow->data[j * width + i];
+			g += percent[3] * snow->data[j * width + i + 1];
+			b += percent[3] * snow->data[j * width + i + 2];
 
 			tex->data[i*3*tex->width + j*3] = r;
 			tex->data[i*3*tex->width + j*3 + 1] = g;
@@ -434,7 +437,7 @@ GLuint Terrain::LoadTextures()
 	glBindTexture(GL_TEXTURE_2D, texName);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_NEAREST);
-	gluBuild2DMipmaps(GL_TEXTURE_2D, 3, width, length, GL_RGB, GL_UNSIGNED_BYTE, tex->data);
+	int z = gluBuild2DMipmaps(GL_TEXTURE_2D, 3, width, length, GL_RGB, GL_UNSIGNED_BYTE, tex->data);
 
 	delete dirt;
 	delete grass;

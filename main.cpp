@@ -57,33 +57,25 @@ char currentMode[80];
 Skybox* skybox;
 Terrain* terrain;
 
-// this string keeps the last good setting 
-// for the game mode
 char gameModeString[40] = "640x480";
 
 void init();
 
 void changeSize(int w1, int h1)
 {
-	// Prevent a divide by zero, when window is too short
-	// (you cant make a window of zero width).
 	if(h1 == 0)
 		h1 = 1;
 
 	w = w1;
 	h = h1;
 	ratio = 1.0f * w / h;
-	// Reset the coordinate system before modifying
 	glMatrixMode(GL_PROJECTION);
 	glLoadIdentity();
 	
-	// Set the viewport to be the entire window
     glViewport(0, 0, w, h);
 
-	// Set the clipping volume
 	gluPerspective(45,ratio,0.1,1000);
 
-	// setting the camera now
 	glMatrixMode(GL_MODELVIEW);
 	glLoadIdentity();
 	gluLookAt(x, y, z, 
@@ -124,39 +116,26 @@ void moveMeFlat(float i)
 
 void setOrthographicProjection() 
 {
-	// switch to projection mode
 	glMatrixMode(GL_PROJECTION);
-	// save previous matrix which contains the 
-	//settings for the perspective projection
 	glPushMatrix();
-	// reset matrix
 	glLoadIdentity();
-	// set a 2D orthographic projection
 	gluOrtho2D(0, w, 0, h);
-	// invert the y axis, down is positive
 	glScalef(1, -1, 1);
-	// mover the origin from the bottom left corner
-	// to the upper left corner
 	glTranslatef(0, -h, 0);
 	glMatrixMode(GL_MODELVIEW);
 }
 
 void resetPerspectiveProjection() 
 {
-	// set the current matrix to GL_PROJECTION
 	glMatrixMode(GL_PROJECTION);
-	// restore previous settings
 	glPopMatrix();
-	// get back to GL_MODELVIEW matrix
 	glMatrixMode(GL_MODELVIEW);
 }
 
 void renderBitmapString(float x, float y, void *font,char *string)
 {  
   char *c;
-  // set position to start drawing fonts
   glRasterPos2f(x, y);
-  // loop all the characters in the string
   for (c=string; *c != '\0'; c++) {
     glutBitmapCharacter(font, *c);
   }
@@ -258,64 +237,48 @@ void pressKey(int key, int x, int y)
 			else
 				deltaMove = -0.1;
 			break;
-		case GLUT_KEY_F1:  
-			
-			// define resolution, color depth
+		/*case GLUT_KEY_F1:  
 			glutGameModeString("640x480:32");
-			// enter full screen
 			if (glutGameModeGet(GLUT_GAME_MODE_POSSIBLE)) {
 				glutEnterGameMode();
 				sprintf(gameModeString,"640x480:32");
 				w = 640;
 				h = 480;
-				// register callbacks again 
-				// and init OpenGL context
 				init();
 			}
 			else
 				glutGameModeString(gameModeString);
 			break;
-		case GLUT_KEY_F2:     
-			// define resolution, color depth
+		case GLUT_KEY_F2:
 			glutGameModeString("800x600:32");
-			// enter full screen
 			if (glutGameModeGet(GLUT_GAME_MODE_POSSIBLE)) {
 				glutEnterGameMode();
 				sprintf(gameModeString,"800x600:32");
 				w = 800;
 				h = 600;
-				// register callbacks again 
-				// and init OpenGL context
 				init();
 			}
 			else
 				glutGameModeString(gameModeString);
 			break;
-		case GLUT_KEY_F3:  
-			// define resolution, color depth
+		case GLUT_KEY_F3:
 			glutGameModeString("1024x768:32");
-			// enter full screen
 			if (glutGameModeGet(GLUT_GAME_MODE_POSSIBLE)) {
 				glutEnterGameMode();
 				w = 1024;
 				h = 768;
 				sprintf(gameModeString,"1024x768:32");
-				// register callbacks again 
-				// and init OpenGL context
 				init();
 			}
 			else
 				glutGameModeString(gameModeString);
 			break;
-		case GLUT_KEY_F4:  
-			// return to default window
-			w = 640;h = 360;
+		case GLUT_KEY_F4:
+			w = 640;
+			h = 360;
 			if (glutGameModeGet(GLUT_GAME_MODE_ACTIVE) != 0)
 				glutLeaveGameMode();
-			break;
-		/*case GLUT_KEY_F12:
-			tgaGrabScreenSeries("3dtechscreen",0,0,w,h);*/
-			break;
+			break;*/
 	}
 }
 
@@ -399,12 +362,9 @@ int main(int argc, char **argv)
 	glutInitWindowSize(1200,800);
 	glutCreateWindow("HeightMap");
 
-	// init terrain structures
-	if (terrain->LoadFromImage("heightmaps/heightmap.bmp",1) != TERRAIN_OK)
+	if (terrain->LoadFromImage("heightmaps/heightmap2.bmp",1) != TERRAIN_OK)
 		return(-1);
 	terrain->Scale(0,30);
-	// register all callbacks and
-	// create display lists
 	init();
 
 	glutMainLoop();
