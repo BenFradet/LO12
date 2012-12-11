@@ -42,7 +42,6 @@ float x=0.0f,y=1.75f,z=5.0f;
 float lx=0.0f,ly=0.0f,lz=-1.0f,deltaMove=0.0;
 int h,w;
 int font=(int)GLUT_BITMAP_8_BY_13;
-static GLint snowman_display_list;
 int bitmapHeight=13;
 int mode;
 float angle2,angle2Y,angleY;
@@ -237,48 +236,6 @@ void pressKey(int key, int x, int y)
 			else
 				deltaMove = -0.1;
 			break;
-		/*case GLUT_KEY_F1:  
-			glutGameModeString("640x480:32");
-			if (glutGameModeGet(GLUT_GAME_MODE_POSSIBLE)) {
-				glutEnterGameMode();
-				sprintf(gameModeString,"640x480:32");
-				w = 640;
-				h = 480;
-				init();
-			}
-			else
-				glutGameModeString(gameModeString);
-			break;
-		case GLUT_KEY_F2:
-			glutGameModeString("800x600:32");
-			if (glutGameModeGet(GLUT_GAME_MODE_POSSIBLE)) {
-				glutEnterGameMode();
-				sprintf(gameModeString,"800x600:32");
-				w = 800;
-				h = 600;
-				init();
-			}
-			else
-				glutGameModeString(gameModeString);
-			break;
-		case GLUT_KEY_F3:
-			glutGameModeString("1024x768:32");
-			if (glutGameModeGet(GLUT_GAME_MODE_POSSIBLE)) {
-				glutEnterGameMode();
-				w = 1024;
-				h = 768;
-				sprintf(gameModeString,"1024x768:32");
-				init();
-			}
-			else
-				glutGameModeString(gameModeString);
-			break;
-		case GLUT_KEY_F4:
-			w = 640;
-			h = 360;
-			if (glutGameModeGet(GLUT_GAME_MODE_ACTIVE) != 0)
-				glutLeaveGameMode();
-			break;*/
 	}
 }
 

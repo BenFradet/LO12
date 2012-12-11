@@ -275,13 +275,13 @@ int Terrain::Create(float xOffset, float yOffset, float zOffset)
 			/*if(i%2 == 0)
 				glTexCoord2f(j+1, i);
 			else*/
-				glTexCoord2f(j, (i+1));
+				glTexCoord2f(i+1, j);
 			glVertex3f(startW + j + xOffset, heights[(i+1)*width + (j)] + yOffset, startL - (i+1) + zOffset);
 
 			/*if(j%2 == 0)
 				glTexCoord2f(j, i);
 			else*/
-				glTexCoord2f(j, i);
+				glTexCoord2f(i, j);
 			glVertex3f(startW + j + xOffset, heights[(i)*width + j] + yOffset, startL - i + zOffset);
 
 			/*glTexCoord2f(j+1, i);
@@ -338,54 +338,54 @@ void Terrain::WeightsBlending(float* percent, unsigned char height)
 	height = add;
 
 	//all dirt
-	if(height < 60)
+	if(height < 7)
 	{
 		percent[0] = 1.0f;
 		percent[1] = 0.0f;
 		percent[2] = 0.0f;
 		percent[3] = 0.0f;
 	}
-	else if(height < 90)
+	else if(height < 11)
 	{
-		percent[0] = 1.0f - (height - 40.0f)/50.0f;
-		percent[1] = (height - 40.0f)/50.0f;
+		percent[0] = 1.0f - (height - 6.0f)/5.0f;
+		percent[1] = (height - 6.0f)/5.0f;
 		percent[2] = 0.0f;
 		percent[3] = 0.0f;
 	}//all grass
-	else if(height < 120)
+	else if(height < 14)
 	{
 		percent[0] = 0.0f;
 		percent[1] = 1.0f;
 		percent[2] = 0.0f;
 		percent[3] = 0.0f;
 	}
-	else if(height < 150)
+	else if(height < 18)
 	{
 		percent[0] = 0.0f;
-		percent[1] = 1.0f - (height - 90.0f)/60.0f;
-		percent[2] = (height - 90.0f)/60.0f;
+		percent[1] = 1.0f - (height - 9.0f)/70.0f;
+		percent[2] = (height - 9.0f)/70.0f;
 		percent[3] = 0.0f;
 	}//all rock
-	else if(height < 180)
+	else if(height < 21)
 	{
 		percent[0] = 0.0f;
 		percent[1] = 0.0f;
 		percent[2] = 1.0f;
 		percent[3] = 0.0f;
 	}
-	else if(height < 210)
+	else if(height < 24)
 	{
 		percent[0] = 0.0f;
 		percent[1] = 0.0f;
-		percent[2] = 1.0f - (height - 150.0f)/60.0f;
-		percent[3] = (height - 150.0f)/60.0f;
+		percent[2] = 1.0f - (height - 15.0f)/9.0f;
+		percent[3] = (height - 15.0f)/9.0f;
 	}//all snow
 	else
 	{
 		percent[0] = 0.0f;
-		percent[1] = 0.0f;
+		percent[1] = 1.0f;
 		percent[2] = 0.0f;
-		percent[3] = 1.0f;
+		percent[3] = 0.0f;
 	}
 }
 
@@ -396,10 +396,10 @@ GLuint Terrain::LoadTextures()
 
 	GLuint texName;
 
-	Bitmap* tex = new Bitmap();
-	tex->data = new unsigned char[width * length * 3];
-	tex->width = width;
-	tex->height = length;
+	int max = 0, min = 512;
+
+	//Bitmap* tex = new Bitmap();
+	GLubyte* tex = new GLubyte[width * length * 3];
 
 	Bitmap* dirt = new Bitmap("terrainTextures/dirt.bmp", 0);
 	Bitmap* grass = new Bitmap("terrainTextures/grass.bmp", 0);
@@ -412,32 +412,44 @@ GLuint Terrain::LoadTextures()
 		{
 			WeightsBlending(percent, (int)(GetHeight(j, i)));
 
-			r = percent[0] * dirt->data[j * width + i];
-			g = percent[0] * dirt->data[j * width + i + 1];
-			b = percent[0] * dirt->data[j * width + i + 2];
+			if(GetHeight(j, i) < min)
+				min = GetHeight(j, i);
+			if(GetHeight(j, i) > max)
+				max = GetHeight(j, i);
 
-			r += percent[1] * grass->data[j * width + i];
-			g += percent[1] * grass->data[j * width + i + 1];
-			b += percent[1] * grass->data[j * width + i + 2];
+			r = percent[0] * dirt->data[j * 3 * width + i * 3];
+			g = percent[0] * dirt->data[j * 3 * width + i * 3 + 1];
+			b = percent[0] * dirt->data[j * 3 * width + i * 3 + 2];
 
-			r += percent[2] * rock->data[j * width + i];
-			g += percent[2] * rock->data[j * width + i + 1];
-			b += percent[2] * rock->data[j * width + i + 2];
+			r += percent[1] * grass->data[j * 3 * width + i * 3];
+			g += percent[1] * grass->data[j * 3 * width + i * 3 + 1];
+			b += percent[1] * grass->data[j * 3 * width + i * 3 + 2];
 
-			r += percent[3] * snow->data[j * width + i];
-			g += percent[3] * snow->data[j * width + i + 1];
-			b += percent[3] * snow->data[j * width + i + 2];
+			r += percent[2] * rock->data[j * 3 * width + i * 3];
+			g += percent[2] * rock->data[j * 3 * width + i * 3 + 1];
+			b += percent[2] * rock->data[j * 3 * width + i * 3 + 2];
 
-			tex->data[i*3*tex->width + j*3] = r;
-			tex->data[i*3*tex->width + j*3 + 1] = g;
-			tex->data[i*3*tex->width + j*3 + 2] = b;
+			r += percent[3] * snow->data[j * 3 * width + i * 3];
+			g += percent[3] * snow->data[j * 3 * width + i * 3 + 1];
+			b += percent[3] * snow->data[j * 3 * width + i * 3 + 2];
+
+			tex[j*3*width + i*3] = r;
+			tex[j*3*width + i*3 + 1] = g;
+			tex[j*3*width + i*3 + 2] = b;
 		}
 
 	glGenTextures(1, &texName);
 	glBindTexture(GL_TEXTURE_2D, texName);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_NEAREST);
-	int z = gluBuild2DMipmaps(GL_TEXTURE_2D, 3, width, length, GL_RGB, GL_UNSIGNED_BYTE, tex->data);
+	glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+	glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+	glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB8, width, length, 0, GL_RGB, GL_UNSIGNED_BYTE, tex);
+	//int z = gluBuild2DMipmaps(GL_TEXTURE_2D, 3, width, length, GL_RGB, GL_UNSIGNED_BYTE, tex->data);
+
+	cout<<"MAXH="<<max<<" MINH="<<min<<endl;
 
 	delete dirt;
 	delete grass;
