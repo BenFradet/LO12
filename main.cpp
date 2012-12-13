@@ -35,7 +35,7 @@ GLfloat cLightGrey[] = {0.9,0.9,0.9,1.0};
 
 int navigationMode = FLY;
 float angle=0.0,deltaAngle = 0.0,ratio;
-float x=0.0f,y=100.75f,z=20.0f;
+float x=0.0f,y=1.75f,z=5.0f;
 float lx=0.0f,ly=0.0f,lz=-1.0f,deltaMove=0.0;
 int h,w;
 int font=(int)GLUT_BITMAP_8_BY_13;
@@ -147,11 +147,9 @@ void renderScene(void)
 		orientMe(angle);
 	}
 	glLoadIdentity();
-	/*gluLookAt(x, y, z, 
-		      x + 10*lx,y + 10*ly,z + 10*lz,
-			  0.0f,1.0f,0.0f);*/
+	gluLookAt(x, y, z, x + 10*lx,y + 10*ly,z + 10*lz, 0.0f,1.0f,0.0f);
 	
-	gluLookAt(5, 85, 10, 5, 85, 0, 0, 1, 0);
+	//gluLookAt(5, 85, 10, 5, 85, 0, 0, 1, 0);
 
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
@@ -227,13 +225,13 @@ void pressKey(int key, int x, int y)
 			if (navigationMode == FLY)
 				deltaMove = 1;
 			else
-				deltaMove = 0.1;
+				deltaMove = 1;
 			break;
 		case GLUT_KEY_DOWN : 			
 			if (navigationMode == FLY)
 				deltaMove = -1;
 			else
-				deltaMove = -0.1;
+				deltaMove = -1;
 			break;
 	}
 }

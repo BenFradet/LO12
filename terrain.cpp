@@ -277,10 +277,10 @@ int Terrain::Create(float xOffset, float yOffset, float zOffset)
 			if (normals != NULL)
 				glNormal3f(normals[3*(i*width + j)], normals[3*(i*width + j)+1], normals[3*(i*width + j)+2]);
 
-			glTexCoord2f((i+1), j);
+			glTexCoord2f((i+1) / 512.0, j / 512.0);
 			glVertex3f(startW + j + xOffset, heights[(i+1)*width + (j)] + yOffset, startL - (i+1) + zOffset);
 
-			glTexCoord2f(i, j);
+			glTexCoord2f(i / 512.0, j / 512.0);
 			glVertex3f(startW + j + xOffset, heights[(i)*width + j] + yOffset, startL - i + zOffset);
 		}
 		glEnd();
@@ -336,9 +336,9 @@ GLuint Terrain::LoadTextures()
 			g += percent[3] * snow->data[j * 3 * w + i * 3 + 1];
 			b += percent[3] * snow->data[j * 3 * w + i * 3 + 2];
 
-			tex[j * 3 * w + i * 3] = r;
-			tex[j * 3 * w + i * 3 + 1] = g;
-			tex[j * 3 * w + i * 3 + 2] = b;
+			tex[i * 3 * w + j * 3] = r;
+			tex[i * 3 * w + j * 3 + 1] = g;
+			tex[i * 3 * w + j * 3 + 2] = b;
 		}
 
 	glGenTextures(1, &texName);
