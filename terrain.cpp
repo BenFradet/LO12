@@ -254,13 +254,13 @@ int Terrain::Create(float xOffset, float yOffset, float zOffset)
 
 		glBegin(GL_QUADS);
 		glTexCoord2f(1, 0);
-		glVertex3f(10, 30, 0);
+		glVertex3f(10, 80, 0);
 		glTexCoord2f(1, 1);
-		glVertex3f(10, 40, 0);
+		glVertex3f(10, 90, 0);
 		glTexCoord2f(0, 1);
-		glVertex3f(0, 40, 0);
+		glVertex3f(0, 90, 0);
 		glTexCoord2f(0, 0);
-		glVertex3f(0, 30, 0);
+		glVertex3f(0, 80, 0);
 		glEnd();
 
 		glBegin(GL_TRIANGLE_STRIP);
@@ -310,35 +310,35 @@ GLuint Terrain::LoadTextures()
 
 	if(dirt == NULL || grass == NULL || rock == NULL || snow == NULL)
 		cout<<"Probleme avec l'allocation des textures"<<endl;
-	for(int i = 0; i < length; i++)
-		for(int j = 0; j < width; j++)
+	for(int i = 0; i < h; i++)
+		for(int j = 0; j < w; j++)
 		{
-			WeightsBlending(percent, (int)(GetHeight(j, i)));
+			WeightsBlending(percent, (int)heights[j*w + i]);
 
-			if(GetHeight(j, i) < min)
-				min = GetHeight(j, i);
-			if(GetHeight(j, i) > max)
-				max = GetHeight(j, i);
+			if(heights[j*w + i] < min)
+				min = heights[j*w + i];
+			if(heights[j*w + i] > max)
+				max = heights[j*w + i];
 
-			r = percent[0] * dirt->data[j * 3 * width + i * 3];
-			g = percent[0] * dirt->data[j * 3 * width + i * 3 + 1];
-			b = percent[0] * dirt->data[j * 3 * width + i * 3 + 2];
+			r = percent[0] * dirt->data[j * 3 * w + i*3];
+			g = percent[0] * dirt->data[j * 3 * w + i*3 + 1];
+			b = percent[0] * dirt->data[j * 3 * w + i*3 + 2];
 
-			r += percent[1] * grass->data[j * 3 * width + i * 3];
-			g += percent[1] * grass->data[j * 3 * width + i * 3 + 1];
-			b += percent[1] * grass->data[j * 3 * width + i * 3 + 2];
+			r += percent[1] * grass->data[j * 3 * w + i * 3];
+			g += percent[1] * grass->data[j * 3 * w + i * 3 + 1];
+			b += percent[1] * grass->data[j * 3 * w + i * 3 + 2];
 
-			r += percent[2] * rock->data[j * 3 * width + i * 3];
-			g += percent[2] * rock->data[j * 3 * width + i * 3 + 1];
-			b += percent[2] * rock->data[j * 3 * width + i * 3 + 2];
+			r += percent[2] * rock->data[j * 3 * w + i * 3];
+			g += percent[2] * rock->data[j * 3 * w + i * 3 + 1];
+			b += percent[2] * rock->data[j * 3 * w + i * 3 + 2];
 
-			r += percent[3] * snow->data[j * 3 * width + i * 3];
-			g += percent[3] * snow->data[j * 3 * width + i * 3 + 1];
-			b += percent[3] * snow->data[j * 3 * width + i * 3 + 2];
+			r += percent[3] * snow->data[j * 3 * w + i * 3];
+			g += percent[3] * snow->data[j * 3 * w + i * 3 + 1];
+			b += percent[3] * snow->data[j * 3 * w + i * 3 + 2];
 
-			tex[j*3*width + i*3] = r;
-			tex[j*3*width + i*3 + 1] = g;
-			tex[j*3*width + i*3 + 2] = b;
+			tex[j * 3 * w + i * 3] = r;
+			tex[j * 3 * w + i * 3 + 1] = g;
+			tex[j * 3 * w + i * 3 + 2] = b;
 		}
 
 	glGenTextures(1, &texName);
@@ -392,63 +392,63 @@ void Terrain::Destroy()
 
 void Terrain::WeightsBlending(float* percent, unsigned char height)
 {
-	int add = height + (rand()%30) - 15;
+	/*int add = height + (rand()%30) - 15;
 
 	if(add < 0)
 		add = 0;
 	if(add > 255)
 		add = 255;
 
-	height = add;
+	height = add;*/
 
 	//all dirt
-	if(height < 7)
+	if(height < 4)
 	{
 		percent[0] = 1.0f;
 		percent[1] = 0.0f;
 		percent[2] = 0.0f;
 		percent[3] = 0.0f;
 	}
-	else if(height < 11)
+	/*else if(height < 10)
 	{
-		percent[0] = 1.0f - (height - 6.0f)/5.0f;
-		percent[1] = (height - 6.0f)/5.0f;
+		percent[0] = 1.0f - (height - 2.5f)/1.5f;
+		percent[1] = (height - 2.5f)/1.5f;
 		percent[2] = 0.0f;
 		percent[3] = 0.0f;
-	}//all grass
-	else if(height < 14)
+	}//all grass*/
+	else if(height < 12)
 	{
 		percent[0] = 0.0f;
 		percent[1] = 1.0f;
 		percent[2] = 0.0f;
 		percent[3] = 0.0f;
-	}
+	}/*
 	else if(height < 18)
 	{
 		percent[0] = 0.0f;
-		percent[1] = 1.0f - (height - 9.0f)/70.0f;
-		percent[2] = (height - 9.0f)/70.0f;
+		percent[1] = 1.0f - (height - 9.0f)/7.0f;
+		percent[2] = (height - 9.0f)/7.0f;
 		percent[3] = 0.0f;
-	}//all rock
-	else if(height < 21)
+	}//all rock*/
+	else if(height < 20)
 	{
 		percent[0] = 0.0f;
 		percent[1] = 0.0f;
 		percent[2] = 1.0f;
 		percent[3] = 0.0f;
-	}
-	else if(height < 24)
+	}/*
+	else if(height < 27)
 	{
 		percent[0] = 0.0f;
 		percent[1] = 0.0f;
-		percent[2] = 1.0f - (height - 15.0f)/9.0f;
-		percent[3] = (height - 15.0f)/9.0f;
-	}//all snow
+		percent[2] = 1.0f - (height - 15.0f)/12.0f;
+		percent[3] = (height - 15.0f)/12.0f;
+	}//all snow*/
 	else
 	{
 		percent[0] = 0.0f;
-		percent[1] = 1.0f;
+		percent[1] = 0.0f;
 		percent[2] = 0.0f;
-		percent[3] = 0.0f;
+		percent[3] = 1.0f;
 	}
 }
