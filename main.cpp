@@ -3,9 +3,6 @@
 #include <stdio.h>
 #include <string.h>
 #include <math.h>
-#include <gl\glut.h>
-#include <gl\gl.h>
-#include <gl\glu.h>
 #include <stdlib.h>
 
 #include "terrain.h"
@@ -319,7 +316,7 @@ int main(int argc, char **argv)
 	glutInitWindowSize(1200,800);
 	glutCreateWindow("HeightMap");
 
-	if (terrain->LoadFromImage("heightmaps/heightmap2.bmp",1) != TERRAIN_OK)
+	if (terrain->LoadFromImage("heightmaps/heightmap.bmp",1) != TERRAIN_OK)
 		return(-1);
 	terrain->Scale(0,30);
 	init();

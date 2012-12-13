@@ -10,7 +10,7 @@
 #include <math.h>
 #include <stdlib.h>
 #include <stdio.h>
-#include <gl\glut.h>
+#include <glut.h>
 #include <gl\gl.h>
 #include <gl\glu.h>
 #include <random>

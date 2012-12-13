@@ -247,17 +247,22 @@ int Terrain::Create(float xOffset, float yOffset, float zOffset)
 		glEnable(GL_COLOR_MATERIAL);
 	}
 
-	/*Bitmap* dirt = new Bitmap("terrainTextures/dirt.bmp", 0);
-	glGenTextures(1, &texName);
-	glBindTexture(GL_TEXTURE_2D, texName);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_NEAREST);
-	gluBuild2DMipmaps(GL_TEXTURE_2D, 3, width, length, GL_RGB, GL_UNSIGNED_BYTE, dirt->data);*/
-
 	for (int i = 0 ; i < length-1; i++) 
 	{
 		glEnable(GL_TEXTURE_2D);
 		glBindTexture(GL_TEXTURE_2D, texName);
+
+		glBegin(GL_QUADS);
+		glTexCoord2f(1, 0);
+		glVertex3f(10, 30, 0);
+		glTexCoord2f(1, 1);
+		glVertex3f(10, 40, 0);
+		glTexCoord2f(0, 1);
+		glVertex3f(0, 40, 0);
+		glTexCoord2f(0, 0);
+		glVertex3f(0, 30, 0);
+		glEnd();
+
 		glBegin(GL_TRIANGLE_STRIP);
 		for (int j = 0;j < width; j++) 
 		{
@@ -272,29 +277,88 @@ int Terrain::Create(float xOffset, float yOffset, float zOffset)
 			if (normals != NULL)
 				glNormal3f(normals[3*(i*width + j)], normals[3*(i*width + j)+1], normals[3*(i*width + j)+2]);
 
-			/*if(i%2 == 0)
-				glTexCoord2f(j+1, i);
-			else*/
-				glTexCoord2f(i+1, j);
+			glTexCoord2f((i+1), j);
 			glVertex3f(startW + j + xOffset, heights[(i+1)*width + (j)] + yOffset, startL - (i+1) + zOffset);
 
-			/*if(j%2 == 0)
-				glTexCoord2f(j, i);
-			else*/
-				glTexCoord2f(i, j);
+			glTexCoord2f(i, j);
 			glVertex3f(startW + j + xOffset, heights[(i)*width + j] + yOffset, startL - i + zOffset);
-
-			/*glTexCoord2f(j+1, i);
-			glVertex3f(startW + j + 1 + xOffset, heights[i*width + j + 1] + yOffset, startL - i + zOffset);
-
-			glTexCoord2f(j+1, i+1);
-			glVertex3f(startW + j + 1 + xOffset, heights[(i+1)*width + j + 1] + yOffset, startL - i + zOffset);*/
 		}
 		glEnd();
 		glDisable(GL_TEXTURE_2D);
 	}
 	glEndList();
 	return(terrainDL);
+}
+
+GLuint Terrain::LoadTextures()
+{
+	float* percent = new float[4];
+	double r, g, b;
+
+	GLuint texName;
+
+	int max = 0, min = 512;
+	
+	Bitmap* dirt = new Bitmap("terrainTextures/dirt.bmp", 0);
+	Bitmap* grass = new Bitmap("terrainTextures/grass.bmp", 0);
+	Bitmap* rock = new Bitmap("terrainTextures/rock.bmp", 0);
+	Bitmap* snow = new Bitmap("terrainTextures/snow.bmp", 0);
+
+	int w = dirt->width, h = dirt->height;
+
+	GLubyte* tex = new GLubyte[w * h * 3];
+
+	if(dirt == NULL || grass == NULL || rock == NULL || snow == NULL)
+		cout<<"Probleme avec l'allocation des textures"<<endl;
+	for(int i = 0; i < length; i++)
+		for(int j = 0; j < width; j++)
+		{
+			WeightsBlending(percent, (int)(GetHeight(j, i)));
+
+			if(GetHeight(j, i) < min)
+				min = GetHeight(j, i);
+			if(GetHeight(j, i) > max)
+				max = GetHeight(j, i);
+
+			r = percent[0] * dirt->data[j * 3 * width + i * 3];
+			g = percent[0] * dirt->data[j * 3 * width + i * 3 + 1];
+			b = percent[0] * dirt->data[j * 3 * width + i * 3 + 2];
+
+			r += percent[1] * grass->data[j * 3 * width + i * 3];
+			g += percent[1] * grass->data[j * 3 * width + i * 3 + 1];
+			b += percent[1] * grass->data[j * 3 * width + i * 3 + 2];
+
+			r += percent[2] * rock->data[j * 3 * width + i * 3];
+			g += percent[2] * rock->data[j * 3 * width + i * 3 + 1];
+			b += percent[2] * rock->data[j * 3 * width + i * 3 + 2];
+
+			r += percent[3] * snow->data[j * 3 * width + i * 3];
+			g += percent[3] * snow->data[j * 3 * width + i * 3 + 1];
+			b += percent[3] * snow->data[j * 3 * width + i * 3 + 2];
+
+			tex[j*3*width + i*3] = r;
+			tex[j*3*width + i*3 + 1] = g;
+			tex[j*3*width + i*3 + 2] = b;
+		}
+
+	glGenTextures(1, &texName);
+	glBindTexture(GL_TEXTURE_2D, texName);
+	glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+	glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+	glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB8, width, length, 0, GL_RGB, GL_UNSIGNED_BYTE, tex);
+
+	cout<<"MAXH="<<max<<" MINH="<<min<<endl;
+
+	delete dirt;
+	delete grass;
+	delete rock;
+	delete snow;
+
+	return texName;
 }
 
 float Terrain::GetHeight(int x, int z) 
@@ -387,74 +451,4 @@ void Terrain::WeightsBlending(float* percent, unsigned char height)
 		percent[2] = 0.0f;
 		percent[3] = 0.0f;
 	}
-}
-
-GLuint Terrain::LoadTextures()
-{
-	float* percent = new float[4];
-	double r, g, b;
-
-	GLuint texName;
-
-	int max = 0, min = 512;
-
-	//Bitmap* tex = new Bitmap();
-	GLubyte* tex = new GLubyte[width * length * 3];
-
-	Bitmap* dirt = new Bitmap("terrainTextures/dirt.bmp", 0);
-	Bitmap* grass = new Bitmap("terrainTextures/grass.bmp", 0);
-	Bitmap* rock = new Bitmap("terrainTextures/rock.bmp", 0);
-	Bitmap* snow = new Bitmap("terrainTextures/snow.bmp", 0);
-	if(dirt == NULL || grass == NULL || rock == NULL || snow == NULL)
-		cout<<"Probleme avec l'allocation des textures"<<endl;
-	for(int i = 0; i < length; i++)
-		for(int j = 0; j < width; j++)
-		{
-			WeightsBlending(percent, (int)(GetHeight(j, i)));
-
-			if(GetHeight(j, i) < min)
-				min = GetHeight(j, i);
-			if(GetHeight(j, i) > max)
-				max = GetHeight(j, i);
-
-			r = percent[0] * dirt->data[j * 3 * width + i * 3];
-			g = percent[0] * dirt->data[j * 3 * width + i * 3 + 1];
-			b = percent[0] * dirt->data[j * 3 * width + i * 3 + 2];
-
-			r += percent[1] * grass->data[j * 3 * width + i * 3];
-			g += percent[1] * grass->data[j * 3 * width + i * 3 + 1];
-			b += percent[1] * grass->data[j * 3 * width + i * 3 + 2];
-
-			r += percent[2] * rock->data[j * 3 * width + i * 3];
-			g += percent[2] * rock->data[j * 3 * width + i * 3 + 1];
-			b += percent[2] * rock->data[j * 3 * width + i * 3 + 2];
-
-			r += percent[3] * snow->data[j * 3 * width + i * 3];
-			g += percent[3] * snow->data[j * 3 * width + i * 3 + 1];
-			b += percent[3] * snow->data[j * 3 * width + i * 3 + 2];
-
-			tex[j*3*width + i*3] = r;
-			tex[j*3*width + i*3 + 1] = g;
-			tex[j*3*width + i*3 + 2] = b;
-		}
-
-	glGenTextures(1, &texName);
-	glBindTexture(GL_TEXTURE_2D, texName);
-	glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-	glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-	glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-	glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-	glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB8, width, length, 0, GL_RGB, GL_UNSIGNED_BYTE, tex);
-	//int z = gluBuild2DMipmaps(GL_TEXTURE_2D, 3, width, length, GL_RGB, GL_UNSIGNED_BYTE, tex->data);
-
-	cout<<"MAXH="<<max<<" MINH="<<min<<endl;
-
-	delete dirt;
-	delete grass;
-	delete rock;
-	delete snow;
-
-	return texName;
 }

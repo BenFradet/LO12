@@ -5,7 +5,7 @@
 #include <cstdio>
 #include <string>
 
-#include <gl\glut.h>
+#include <glut.h>
 #include <gl\gl.h>
 #include <gl\glu.h>
 
