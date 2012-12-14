@@ -345,9 +345,9 @@ GLuint Terrain::LoadTextures()
 	glBindTexture(GL_TEXTURE_2D, texName);
 	glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-	glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-	glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-	glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 	glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB8, width, length, 0, GL_RGB, GL_UNSIGNED_BYTE, tex);
 
@@ -357,6 +357,8 @@ GLuint Terrain::LoadTextures()
 	delete grass;
 	delete rock;
 	delete snow;
+
+	delete tex;
 
 	return texName;
 }
@@ -392,57 +394,48 @@ void Terrain::Destroy()
 
 void Terrain::WeightsBlending(float* percent, unsigned char height)
 {
-	/*int add = height + (rand()%30) - 15;
-
-	if(add < 0)
-		add = 0;
-	if(add > 255)
-		add = 255;
-
-	height = add;*/
-
 	//all dirt
-	if(height < 4)
+	if(height < 7)
 	{
 		percent[0] = 1.0f;
 		percent[1] = 0.0f;
 		percent[2] = 0.0f;
 		percent[3] = 0.0f;
 	}
-	/*else if(height < 10)
+	else if(height < 10)
 	{
-		percent[0] = 1.0f - (height - 2.5f)/1.5f;
-		percent[1] = (height - 2.5f)/1.5f;
+		percent[0] = 1.0f - (height - 7.0f)/3.0f;
+		percent[1] = (height - 7.0f)/3.0f;
 		percent[2] = 0.0f;
 		percent[3] = 0.0f;
 	}//all grass*/
-	else if(height < 12)
+	else if(height < 16)
 	{
 		percent[0] = 0.0f;
 		percent[1] = 1.0f;
 		percent[2] = 0.0f;
 		percent[3] = 0.0f;
-	}/*
-	else if(height < 18)
+	}
+	else if(height < 19)
 	{
 		percent[0] = 0.0f;
-		percent[1] = 1.0f - (height - 9.0f)/7.0f;
-		percent[2] = (height - 9.0f)/7.0f;
+		percent[1] = 1.0f - (height - 16.0f)/3.0f;
+		percent[2] = (height - 16.0f)/3.0f;
 		percent[3] = 0.0f;
 	}//all rock*/
-	else if(height < 20)
+	else if(height < 25)
 	{
 		percent[0] = 0.0f;
 		percent[1] = 0.0f;
 		percent[2] = 1.0f;
 		percent[3] = 0.0f;
-	}/*
-	else if(height < 27)
+	}
+	else if(height < 28)
 	{
 		percent[0] = 0.0f;
 		percent[1] = 0.0f;
-		percent[2] = 1.0f - (height - 15.0f)/12.0f;
-		percent[3] = (height - 15.0f)/12.0f;
+		percent[2] = 1.0f - (height - 25.0f)/3.0f;
+		percent[3] = (height - 25.0f)/3.0f;
 	}//all snow*/
 	else
 	{

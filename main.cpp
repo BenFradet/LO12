@@ -10,7 +10,6 @@
 
 using namespace std;
 
-
 // stuff for lighting
 GLfloat lAmbient[] = {0.3,0.3,0.3,1.0};
 GLfloat lDiffuse[] = {1.0,1.0,1.0,1.0};
@@ -48,12 +47,9 @@ int terrainDL,iterations = 0,totalIterations = 0;
 char s[60];
 
 int frame,time,timebase=0;
-char currentMode[80];
 
 Skybox* skybox;
 Terrain* terrain;
-
-char gameModeString[40] = "640x480";
 
 void init();
 
@@ -142,12 +138,23 @@ void renderScene(void)
 {	
 	if (deltaMove)
 		moveMeFlat(deltaMove);
-	if (deltaAngle) {
+	if (deltaAngle) 
+	{
 		angle += deltaAngle;
 		orientMe(angle);
 	}
 	glLoadIdentity();
-	gluLookAt(x, y, z, x + 10*lx,y + 10*ly,z + 10*lz, 0.0f,1.0f,0.0f);
+	if(navigationMode == WALK)
+	{
+		y = terrain->GetHeight(x, z) + 5.0f;
+		gluLookAt(x, y, z, x + 10*lx,y + 10*ly,z + 10*lz, 0.0f,1.0f,0.0f);
+	}
+	else if(navigationMode == FLY)
+	{
+		if(y <= (terrain->GetHeight(x, z) + 0.5f))
+			y = terrain->GetHeight(x, z) + 0.5f;
+		gluLookAt(x, y, z, x + 10*lx,y + 10*ly,z + 10*lz, 0.0f,1.0f,0.0f);
+	}
 	
 	//gluLookAt(5, 85, 10, 5, 85, 0, 0, 1, 0);
 
@@ -180,7 +187,7 @@ void renderScene(void)
 
 	glMaterialfv(GL_FRONT, GL_SPECULAR, mSpecular);
 	glMaterialfv(GL_FRONT, GL_SHININESS,mShininess);
-	glMaterialfv(GL_FRONT, GL_AMBIENT, cGrey);
+	glMaterialfv(GL_FRONT, GL_AMBIENT, cWhite);
 	glMaterialfv(GL_FRONT, GL_DIFFUSE, cWhite);
 	glCallList(terrainDL);
 
@@ -199,7 +206,6 @@ void renderScene(void)
 	glLoadIdentity();
 	renderBitmapString(30,30,(void *)font,s); 
 	renderBitmapString(30,40,(void *)font,"Esc - Quit");
-	renderBitmapString(30,135,(void *)font,currentMode);
 	glPopMatrix();
 	resetPerspectiveProjection();
 	glEnable(GL_LIGHTING);
@@ -207,7 +213,29 @@ void renderScene(void)
 }
 
 void processNormalKeys(unsigned char key, int x, int y) 
-{
+{	
+	if(key == 119 && navigationMode == FLY)
+		navigationMode = WALK;
+	if(key == 102 && navigationMode == WALK)
+		navigationMode = FLY;
+	else
+	{
+		switch (key) 
+		{
+			case 113: 
+				deltaAngle = -0.005f;
+				break;
+			case 100: 
+				deltaAngle = 0.005f;
+				break;
+			case 122: 
+				deltaMove = 1;
+				break;
+			case 115: 
+				deltaMove = -1;
+				break;
+		}
+	}
 	if (key == 27) 
 	{
 		terrain->Destroy();
@@ -215,23 +243,44 @@ void processNormalKeys(unsigned char key, int x, int y)
 	}
 }
 
+void releaseNormalKeys(unsigned char key, int x, int y)
+{
+	switch (key) 
+	{
+		case 113: 
+			if (deltaAngle < 0.0f) 
+				deltaAngle = 0.0f;
+			break;
+		case 100: 
+			if (deltaAngle > 0.0f) 
+				deltaAngle = 0.0f;
+			break;
+		case 122:
+			if (deltaMove > 0) 
+				deltaMove = 0;
+			break;
+		case 115:
+			if (deltaMove < 0) 
+				deltaMove = 0;
+			break;
+	}
+}
+
 void pressKey(int key, int x, int y) 
 {
 	switch (key) 
 	{
-		case GLUT_KEY_LEFT : deltaAngle = -0.005f;break;
-		case GLUT_KEY_RIGHT : deltaAngle = 0.005f;break;
-		case GLUT_KEY_UP : 
-			if (navigationMode == FLY)
-				deltaMove = 1;
-			else
-				deltaMove = 1;
+		case GLUT_KEY_LEFT: 
+			deltaAngle = -0.005f;
 			break;
-		case GLUT_KEY_DOWN : 			
-			if (navigationMode == FLY)
-				deltaMove = -1;
-			else
-				deltaMove = -1;
+		case GLUT_KEY_RIGHT: 
+			deltaAngle = 0.005f;
+			break;
+		case GLUT_KEY_UP: 
+			deltaMove = 1;
+			break;
+		case GLUT_KEY_DOWN :
+			deltaMove = -1;
 			break;
 	}
 }
@@ -278,13 +327,11 @@ void mousePress(int button, int state, int x, int y)
 		deltaX = x;
 		deltaY = y;
 //		angle2Y = 0;
-		navigationMode = FLY;
 	} 
 	else if (state == GLUT_UP) 
 	{
 		angleY = angle2Y;
 		angle = angle2;
-		navigationMode = WALK;
 	}
 }
 
@@ -298,6 +345,7 @@ void init()
 
 	glutIgnoreKeyRepeat(1);
 	glutKeyboardFunc(processNormalKeys);
+	glutKeyboardUpFunc(releaseNormalKeys);
 	glutSpecialFunc(pressKey);
 	glutSpecialUpFunc(releaseKey);
 	glutMotionFunc(activeMouseMotion);
@@ -318,7 +366,7 @@ int main(int argc, char **argv)
 
 	if (terrain->LoadFromImage("heightmaps/heightmap.bmp",1) != TERRAIN_OK)
 		return(-1);
-	terrain->Scale(0,30);
+	terrain->Scale(0,40);
 	init();
 
 	glutMainLoop();
