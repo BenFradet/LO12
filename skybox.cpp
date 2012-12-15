@@ -8,12 +8,12 @@ int Skybox::loadSkybox()
 
 	glGenTextures(6, tabTextures);
 
-	textures[0].loadBmp("skybox1/XN.bmp", 0);
-	textures[1].loadBmp("skybox1/XP.bmp", 0);
-	textures[2].loadBmp("skybox1/YN.bmp", 0);
-	textures[3].loadBmp("skybox1/YP.bmp", 0);
-	textures[4].loadBmp("skybox1/ZN.bmp", 0);
-	textures[5].loadBmp("skybox1/ZP.bmp", 0);
+	textures[0].loadBmp("Data/skybox1/XN.bmp", 0);
+	textures[1].loadBmp("Data/skybox1/XP.bmp", 0);
+	textures[2].loadBmp("Data/skybox1/YN.bmp", 0);
+	textures[3].loadBmp("Data/skybox1/YP.bmp", 0);
+	textures[4].loadBmp("Data/skybox1/ZN.bmp", 0);
+	textures[5].loadBmp("Data/skybox1/ZP.bmp", 0);
 
     for(int i=0;i<6;i++) 
 	{

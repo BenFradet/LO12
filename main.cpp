@@ -3,10 +3,10 @@
 #include <stdio.h>
 #include <string.h>
 #include <math.h>
-#include <stdlib.h>
 
 #include "terrain.h"
 #include "skybox.h"
+#include "billboard.h"
 
 using namespace std;
 
@@ -50,6 +50,8 @@ int frame,time,timebase=0;
 
 Skybox* skybox;
 Terrain* terrain;
+Billboard* billboard;
+GLuint treeTex;
 
 void init();
 
@@ -75,15 +77,18 @@ void changeSize(int w1, int h1)
 			  0.0f,1.0f,0.0f);
 }
 
-
 void initScene() 
 {
 	glEnable(GL_DEPTH_TEST);
 	glEnable(GL_CULL_FACE);
 	glCullFace(GL_BACK);
 	terrainDL = terrain->Create(0,0,0);
-	y = terrain->GetHeight(0,0) + 1.75;
-	
+	y = terrain->GetHeight(0,0) + 5.0f;
+
+	//
+	billboard->loadTexture();
+	//
+
 	glLightfv(GL_LIGHT0,GL_AMBIENT,lAmbient);
 	glLightfv(GL_LIGHT0,GL_DIFFUSE,lDiffuse);
 	glLightfv(GL_LIGHT0,GL_SPECULAR,lSpecular);
@@ -126,16 +131,15 @@ void resetPerspectiveProjection()
 
 void renderBitmapString(float x, float y, void *font,char *string)
 {  
-  char *c;
-  glRasterPos2f(x, y);
-  for (c=string; *c != '\0'; c++) {
-    glutBitmapCharacter(font, *c);
-  }
+	char *c;
+	glRasterPos2f(x, y);
+	for (c=string; *c != '\0'; c++)
+		glutBitmapCharacter(font, *c);
 }
 
 
 void renderScene(void) 
-{	
+{
 	if (deltaMove)
 		moveMeFlat(deltaMove);
 	if (deltaAngle) 
@@ -143,6 +147,16 @@ void renderScene(void)
 		angle += deltaAngle;
 		orientMe(angle);
 	}
+
+	if(x < -255)
+		x = -255;
+	else if(x > 255)
+		x = 255;
+	if(z < -255)
+		z = -255;
+	else if(z > 255)
+		z = 255;
+
 	glLoadIdentity();
 	if(navigationMode == WALK)
 	{
@@ -165,6 +179,7 @@ void renderScene(void)
 	glLightfv(GL_LIGHT0,GL_POSITION,lPosition);
 
 	//Draw axis
+
 	glDisable(GL_LIGHTING);
 	glColor3f(1.0, 0.0, 0.0);
 	glBegin(GL_LINES);
@@ -183,13 +198,45 @@ void renderScene(void)
 	glEnd();
 	glEnable(GL_LIGHTING);
 
-	// Draw ground
+	//Draw ground
 
 	glMaterialfv(GL_FRONT, GL_SPECULAR, mSpecular);
 	glMaterialfv(GL_FRONT, GL_SHININESS,mShininess);
 	glMaterialfv(GL_FRONT, GL_AMBIENT, cWhite);
 	glMaterialfv(GL_FRONT, GL_DIFFUSE, cWhite);
 	glCallList(terrainDL);
+
+	//Draw billboard
+
+	glEnable(GL_BLEND);
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+	glEnable(GL_ALPHA_TEST);
+	glAlphaFunc(GL_GREATER, 0);
+	glBindTexture(GL_TEXTURE_2D, treeTex);
+	glEnable(GL_TEXTURE_2D);
+
+	billboard->billboardCylindricalBegin();
+
+	int yTree = terrain->GetHeight(10, 10) + 10;
+	glBegin(GL_QUADS);
+		glTexCoord2f(0, 0);
+		glVertex3f(10, yTree, 10);
+		glTexCoord2f(1, 0);
+		glVertex3f(10, yTree + 100, 10);
+		glTexCoord2f(1, 1);
+		glVertex3f(110, yTree + 100, 10);
+		glTexCoord2f(0, 1);
+		glVertex3f(110, yTree, 10);
+	glEnd();
+
+	billboard->billboardEnd();
+
+	glDisable(GL_BLEND);
+	glDisable(GL_ALPHA_TEST);
+	glDisable(GL_TEXTURE_2D);
+	glBindTexture(GL_TEXTURE_2D, 0);
+
+	//
 
 	frame++;
 	time=glutGet(GLUT_ELAPSED_TIME);
@@ -364,7 +411,7 @@ int main(int argc, char **argv)
 	glutInitWindowSize(1200,800);
 	glutCreateWindow("HeightMap");
 
-	if (terrain->LoadFromImage("heightmaps/heightmap.bmp",1) != TERRAIN_OK)
+	if (terrain->LoadFromImage("Data/heightmaps/heightmap.bmp",1) != TERRAIN_OK)
 		return(-1);
 	terrain->Scale(0,40);
 	init();

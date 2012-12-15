@@ -253,14 +253,14 @@ int Terrain::Create(float xOffset, float yOffset, float zOffset)
 		glBindTexture(GL_TEXTURE_2D, texName);
 
 		glBegin(GL_QUADS);
-		glTexCoord2f(1, 0);
-		glVertex3f(10, 80, 0);
-		glTexCoord2f(1, 1);
-		glVertex3f(10, 90, 0);
-		glTexCoord2f(0, 1);
-		glVertex3f(0, 90, 0);
-		glTexCoord2f(0, 0);
-		glVertex3f(0, 80, 0);
+			glTexCoord2f(1, 0);
+			glVertex3f(10, 80, 0);
+			glTexCoord2f(1, 1);
+			glVertex3f(10, 90, 0);
+			glTexCoord2f(0, 1);
+			glVertex3f(0, 90, 0);
+			glTexCoord2f(0, 0);
+			glVertex3f(0, 80, 0);
 		glEnd();
 
 		glBegin(GL_TRIANGLE_STRIP);
@@ -285,6 +285,7 @@ int Terrain::Create(float xOffset, float yOffset, float zOffset)
 		}
 		glEnd();
 		glDisable(GL_TEXTURE_2D);
+		glBindTexture(GL_TEXTURE_2D, 0);
 	}
 	glEndList();
 	return(terrainDL);
@@ -299,10 +300,10 @@ GLuint Terrain::LoadTextures()
 
 	int max = 0, min = 512;
 	
-	Bitmap* dirt = new Bitmap("terrainTextures/dirt.bmp", 0);
-	Bitmap* grass = new Bitmap("terrainTextures/grass.bmp", 0);
-	Bitmap* rock = new Bitmap("terrainTextures/rock.bmp", 0);
-	Bitmap* snow = new Bitmap("terrainTextures/snow.bmp", 0);
+	Bitmap* dirt = new Bitmap("Data/terrainTextures/dirt.bmp", 0);
+	Bitmap* grass = new Bitmap("Data/terrainTextures/grass.bmp", 0);
+	Bitmap* rock = new Bitmap("Data/terrainTextures/rock.bmp", 0);
+	Bitmap* snow = new Bitmap("Data/terrainTextures/snow.bmp", 0);
 
 	int w = dirt->width, h = dirt->height;
 
