@@ -158,7 +158,7 @@ void renderScene(void)
 		z = 255;
 
 	glLoadIdentity();
-	if(navigationMode == WALK)
+	/*if(navigationMode == WALK)
 	{
 		y = terrain->GetHeight(x, z) + 5.0f;
 		gluLookAt(x, y, z, x + 10*lx,y + 10*ly,z + 10*lz, 0.0f,1.0f,0.0f);
@@ -168,9 +168,9 @@ void renderScene(void)
 		if(y <= (terrain->GetHeight(x, z) + 0.5f))
 			y = terrain->GetHeight(x, z) + 0.5f;
 		gluLookAt(x, y, z, x + 10*lx,y + 10*ly,z + 10*lz, 0.0f,1.0f,0.0f);
-	}
+	}*/
 	
-	//gluLookAt(5, 85, 10, 5, 85, 0, 0, 1, 0);
+	gluLookAt(5, 75, 15, 5, 75, 0, 0, 1, 0);
 
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
@@ -209,7 +209,7 @@ void renderScene(void)
 	//Draw billboard
 
 	glEnable(GL_BLEND);
-	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+	//glBlendFunc(GL_ZERO, GL_ONE_MINUS_SRC_ALPHA);
 	glEnable(GL_ALPHA_TEST);
 	glAlphaFunc(GL_GREATER, 0);
 	glEnable(GL_TEXTURE_2D);
@@ -230,10 +230,10 @@ void renderScene(void)
 	glEnd();
 
 	billboard->billboardEnd();
-
-	glDisable(GL_BLEND);
-	glDisable(GL_ALPHA_TEST);
+	
 	glDisable(GL_TEXTURE_2D);
+	glDisable(GL_ALPHA_TEST);
+	glDisable(GL_BLEND);
 
 	//
 
