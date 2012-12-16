@@ -52,8 +52,10 @@ Skybox* skybox;
 Terrain* terrain;
 Billboard* billboard;
 GLuint treeTex;
+float* list;
 
 void init();
+float* createTreePositionsList();
 
 void changeSize(int w1, int h1)
 {
@@ -87,6 +89,8 @@ void initScene()
 
 	//
 	treeTex = billboard->loadTexture();
+	
+	list = createTreePositionsList();
 	//
 
 	glLightfv(GL_LIGHT0,GL_AMBIENT,lAmbient);
@@ -137,6 +141,28 @@ void renderBitmapString(float x, float y, void *font,char *string)
 		glutBitmapCharacter(font, *c);
 }
 
+float* createTreePositionsList()
+{
+	float* list = new float[3 * 15];
+	int i = 0;
+
+	while(i < 45)
+	{
+		float xT = float(rand()%500) - 250;
+		float zT = float(rand()%500) - 250;
+		float yT = terrain->GetHeight(xT, zT);
+
+		if(yT > 12 && yT < 20)
+		{
+			*(list + i) = xT;
+			*(list + i + 1) = yT;
+			*(list + i + 2) = zT;
+			i += 3;
+		}		
+	}
+
+	return list;
+}
 
 void renderScene(void) 
 {
@@ -158,7 +184,7 @@ void renderScene(void)
 		z = 255;
 
 	glLoadIdentity();
-	/*if(navigationMode == WALK)
+	if(navigationMode == WALK)
 	{
 		y = terrain->GetHeight(x, z) + 5.0f;
 		gluLookAt(x, y, z, x + 10*lx,y + 10*ly,z + 10*lz, 0.0f,1.0f,0.0f);
@@ -168,9 +194,9 @@ void renderScene(void)
 		if(y <= (terrain->GetHeight(x, z) + 0.5f))
 			y = terrain->GetHeight(x, z) + 0.5f;
 		gluLookAt(x, y, z, x + 10*lx,y + 10*ly,z + 10*lz, 0.0f,1.0f,0.0f);
-	}*/
+	}
 	
-	gluLookAt(5, 75, 15, 5, 75, 0, 0, 1, 0);
+	//gluLookAt(5, 75, 15, 5, 75, 0, 0, 1, 0);
 
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
@@ -208,8 +234,6 @@ void renderScene(void)
 
 	//Draw billboard
 
-	glEnable(GL_BLEND);
-	//glBlendFunc(GL_ZERO, GL_ONE_MINUS_SRC_ALPHA);
 	glEnable(GL_ALPHA_TEST);
 	glAlphaFunc(GL_GREATER, 0);
 	glEnable(GL_TEXTURE_2D);
@@ -217,23 +241,35 @@ void renderScene(void)
 
 	billboard->billboardCylindricalBegin();
 
-	int yTree = terrain->GetHeight(10, 10) + 10;
 	glBegin(GL_QUADS);
-		glTexCoord2f(0, 0);
-		glVertex3f(0, 70, 0);
-		glTexCoord2f(1, 0);
-		glVertex3f(10, 70, 0);
-		glTexCoord2f(1, 1);
-		glVertex3f(10, 80, 0);
-		glTexCoord2f(0, 1);
-		glVertex3f(0, 80, 0);
+			glTexCoord2f(0, 0);
+			glVertex3f(0, 70, 0);
+			glTexCoord2f(1, 0);
+			glVertex3f(10, 70, 0);
+			glTexCoord2f(1, 1);
+			glVertex3f(10, 80, 0);
+			glTexCoord2f(0, 1);
+			glVertex3f(0, 80, 0);
 	glEnd();
+
+	for(int i = 0; i < 45; i += 3)
+	{
+		glBegin(GL_QUADS);
+			glTexCoord2f(0, 0);
+			glVertex3f(list[i], list[i + 1], list[i + 2]);
+			glTexCoord2f(1, 0);
+			glVertex3f(list[i] + 10, list[i + 1], list[i + 2]);
+			glTexCoord2f(1, 1);
+			glVertex3f(list[i] + 10, list[i + 1] + 10, list[i + 2]);
+			glTexCoord2f(0, 1);
+			glVertex3f(list[i], list[i + 1] + 10, list[i + 2]);
+		glEnd();
+	}
 
 	billboard->billboardEnd();
 	
 	glDisable(GL_TEXTURE_2D);
 	glDisable(GL_ALPHA_TEST);
-	glDisable(GL_BLEND);
 
 	//
 
