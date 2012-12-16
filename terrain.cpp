@@ -285,7 +285,6 @@ int Terrain::Create(float xOffset, float yOffset, float zOffset)
 		}
 		glEnd();
 		glDisable(GL_TEXTURE_2D);
-		glBindTexture(GL_TEXTURE_2D, 0);
 	}
 	glEndList();
 	return(terrainDL);

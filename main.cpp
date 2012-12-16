@@ -86,7 +86,7 @@ void initScene()
 	y = terrain->GetHeight(0,0) + 5.0f;
 
 	//
-	billboard->loadTexture();
+	treeTex = billboard->loadTexture();
 	//
 
 	glLightfv(GL_LIGHT0,GL_AMBIENT,lAmbient);
@@ -212,21 +212,21 @@ void renderScene(void)
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	glEnable(GL_ALPHA_TEST);
 	glAlphaFunc(GL_GREATER, 0);
-	glBindTexture(GL_TEXTURE_2D, treeTex);
 	glEnable(GL_TEXTURE_2D);
+	glBindTexture(GL_TEXTURE_2D, treeTex);
 
 	billboard->billboardCylindricalBegin();
 
 	int yTree = terrain->GetHeight(10, 10) + 10;
 	glBegin(GL_QUADS);
 		glTexCoord2f(0, 0);
-		glVertex3f(10, yTree, 10);
+		glVertex3f(0, 70, 0);
 		glTexCoord2f(1, 0);
-		glVertex3f(10, yTree + 100, 10);
+		glVertex3f(10, 70, 0);
 		glTexCoord2f(1, 1);
-		glVertex3f(110, yTree + 100, 10);
+		glVertex3f(10, 80, 0);
 		glTexCoord2f(0, 1);
-		glVertex3f(110, yTree, 10);
+		glVertex3f(0, 80, 0);
 	glEnd();
 
 	billboard->billboardEnd();
@@ -234,7 +234,6 @@ void renderScene(void)
 	glDisable(GL_BLEND);
 	glDisable(GL_ALPHA_TEST);
 	glDisable(GL_TEXTURE_2D);
-	glBindTexture(GL_TEXTURE_2D, 0);
 
 	//
 
