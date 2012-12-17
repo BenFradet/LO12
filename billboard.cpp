@@ -21,6 +21,31 @@ void Billboard::billboardCylindricalBegin()
 	glLoadMatrixf(modelView);
 }
 
+void Billboard::billboardCylindricalBegin(float camX, float camY, float camZ, float objX, float objY, float objZ)
+{
+	float lookAt[3], objToCamProj[3], upAux[3];
+	float modelView[16], angleCosine;
+
+	glPushMatrix();
+
+	objToCamProj[0] = camX - objX;
+	objToCamProj[1] = 0.0f;
+	objToCamProj[2] = camZ - objZ;
+
+	lookAt[0] = 0;
+	lookAt[1] = 0;
+	lookAt[2] = 1;
+
+	Vector::normalize(objToCamProj);
+
+	Vector::crossProduct(upAux, lookAt, objToCamProj);
+
+	angleCosine = Vector::dotProduct(lookAt, objToCamProj);
+
+	if ((angleCosine < 0.99990) && (angleCosine > -0.9999))
+      glRotatef(acos(angleCosine)*180/3.14,upAux[0], upAux[1], upAux[2]);
+}
+
 void Billboard::billboardEnd()
 {
 	glPopMatrix();

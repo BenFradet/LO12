@@ -52,7 +52,8 @@ Skybox* skybox;
 Terrain* terrain;
 Billboard* billboard;
 GLuint treeTex;
-float* list;
+float* treeList;
+int done = 0;
 
 void init();
 float* createTreePositionsList();
@@ -89,8 +90,7 @@ void initScene()
 
 	//
 	treeTex = billboard->loadTexture();
-	
-	list = createTreePositionsList();
+	treeList = createTreePositionsList();
 	//
 
 	glLightfv(GL_LIGHT0,GL_AMBIENT,lAmbient);
@@ -251,22 +251,26 @@ void renderScene(void)
 			glTexCoord2f(0, 1);
 			glVertex3f(0, 80, 0);
 	glEnd();
+	
+	billboard->billboardEnd();
 
 	for(int i = 0; i < 45; i += 3)
 	{
+		billboard->billboardCylindricalBegin(x, y, z, *(treeList + i), *(treeList + i + 1), *(treeList + i + 2));
+
 		glBegin(GL_QUADS);
 			glTexCoord2f(0, 0);
-			glVertex3f(list[i], list[i + 1], list[i + 2]);
+			glVertex3f(*(treeList + i), *(treeList + i + 1), *(treeList + i + 2));
 			glTexCoord2f(1, 0);
-			glVertex3f(list[i] + 10, list[i + 1], list[i + 2]);
+			glVertex3f(*(treeList + i) + 10, *(treeList + i + 1), *(treeList + i + 2));
 			glTexCoord2f(1, 1);
-			glVertex3f(list[i] + 10, list[i + 1] + 10, list[i + 2]);
+			glVertex3f(*(treeList + i) + 10, *(treeList + i + 1) + 10, *(treeList + i + 2));
 			glTexCoord2f(0, 1);
-			glVertex3f(list[i], list[i + 1] + 10, list[i + 2]);
+			glVertex3f(*(treeList + i), *(treeList + i + 1) + 10, *(treeList + i + 2));
 		glEnd();
+		
+		billboard->billboardEnd();
 	}
-
-	billboard->billboardEnd();
 	
 	glDisable(GL_TEXTURE_2D);
 	glDisable(GL_ALPHA_TEST);

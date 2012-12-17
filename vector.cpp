@@ -48,3 +48,23 @@ float Vector::operator[](int i)
 		return 0;
 }
 
+void Vector::normalize(float* t)
+{
+	float d = sqrt(*t * *t + *(t + 1) * *(t + 1) + *(t + 2) * *(t+2));
+	*t /= d;
+	*(t + 1) /= d;
+	*(t + 2) /= d;
+}
+
+void Vector::crossProduct(float* vf, float* v1, float* v2)
+{
+	vf[0] = v1[1] * v2[2] - v1[2] * v2[1];
+	vf[1] = v1[2] * v2[0] - v1[0] * v2[2];
+	vf[2] = v1[0] * v2[1] - v1[1] * v2[0];
+}
+
+float Vector::dotProduct(float* v1, float* v2)
+{
+	float ret = v1[0] * v2[0] + v1[1] * v2[1] + v1[2] * v2[2];
+	return ret;
+}
