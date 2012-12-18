@@ -94,7 +94,7 @@ void initScene()
 	//
 	treeTex = billboard->LoadTexture();
 	treeList = createTreePositionsList();
-	//water->Init();
+	water->Init();
 	//
 
 	glLightfv(GL_LIGHT0,GL_AMBIENT,lAmbient);
@@ -204,6 +204,10 @@ void renderScene(void)
 
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
+	glDisable(GL_BLEND);
+	glDisable(GL_TEXTURE_GEN_S);
+	glDisable(GL_TEXTURE_GEN_T);
+
 	skybox->Draw();
 
 	glLightfv(GL_LIGHT0,GL_POSITION,lPosition);
@@ -286,6 +290,10 @@ void renderScene(void)
 	glTranslatef(0, 30, 0);
 	glColor3f(0.85f, 1.0f, 0.85f);
 
+	glEnable(GL_BLEND);
+	glEnable(GL_TEXTURE_GEN_S);
+	glEnable(GL_TEXTURE_GEN_T);
+	
 	//water->Draw();
 	//water->Exit();
 
