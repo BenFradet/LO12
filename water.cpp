@@ -7,8 +7,6 @@ void Water::CreateRainDrop()
 
 void Water::Draw()
 {
-	GLfloat vectLength;
-
 	for(int i = 6; i < SIZE - 6; i++)
 		for(int j = 6; j < SIZE - 6; j++)
 			velocity[i * SIZE + j] = velocity[i * SIZE + j] + (position[i * SIZE + j] - 
