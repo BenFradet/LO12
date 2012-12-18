@@ -7,6 +7,7 @@
 #include "terrain.h"
 #include "skybox.h"
 #include "billboard.h"
+#include "water.h"
 
 using namespace std;
 
@@ -32,6 +33,8 @@ GLfloat cLightGrey[] = {0.9,0.9,0.9,1.0};
 #define FLY		1
 #define WALK	2
 
+#define SIZE	512
+
 int navigationMode = FLY;
 float angle=0.0,deltaAngle = 0.0,ratio;
 float x=0.0f,y=1.75f,z=5.0f;
@@ -53,7 +56,7 @@ Terrain* terrain;
 Billboard* billboard;
 GLuint treeTex;
 float* treeList;
-int done = 0;
+Water* water;
 
 void init();
 float* createTreePositionsList();
@@ -89,8 +92,9 @@ void initScene()
 	y = terrain->GetHeight(0,0) + 5.0f;
 
 	//
-	treeTex = billboard->loadTexture();
+	treeTex = billboard->LoadTexture();
 	treeList = createTreePositionsList();
+	//water->Init();
 	//
 
 	glLightfv(GL_LIGHT0,GL_AMBIENT,lAmbient);
@@ -200,7 +204,7 @@ void renderScene(void)
 
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-	skybox->drawSkybox();
+	skybox->Draw();
 
 	glLightfv(GL_LIGHT0,GL_POSITION,lPosition);
 
@@ -239,7 +243,7 @@ void renderScene(void)
 	glEnable(GL_TEXTURE_2D);
 	glBindTexture(GL_TEXTURE_2D, treeTex);
 
-	billboard->billboardCylindricalBegin();
+	billboard->CylindricalBegin();
 
 	glBegin(GL_QUADS);
 			glTexCoord2f(0, 0);
@@ -252,11 +256,11 @@ void renderScene(void)
 			glVertex3f(0, 80, 0);
 	glEnd();
 	
-	billboard->billboardEnd();
+	billboard->End();
 
 	for(int i = 0; i < 45; i += 3)
 	{
-		billboard->billboardCylindricalBegin(x, y, z, *(treeList + i), *(treeList + i + 1), *(treeList + i + 2));
+		billboard->CylindricalBegin(x, y, z, *(treeList + i), *(treeList + i + 1), *(treeList + i + 2));
 
 		glBegin(GL_QUADS);
 			glTexCoord2f(0, 0);
@@ -269,11 +273,23 @@ void renderScene(void)
 			glVertex3f(*(treeList + i), *(treeList + i + 1) + 10, *(treeList + i + 2));
 		glEnd();
 		
-		billboard->billboardEnd();
+		billboard->End();
 	}
 	
 	glDisable(GL_TEXTURE_2D);
 	glDisable(GL_ALPHA_TEST);
+
+	//Draw water
+
+	glPushMatrix();
+	glLoadIdentity();
+	glTranslatef(0, 30, 0);
+	glColor3f(0.85f, 1.0f, 0.85f);
+
+	//water->Draw();
+	//water->Exit();
+
+	glPopMatrix();
 
 	//
 
@@ -425,9 +441,11 @@ void mousePress(int button, int state, int x, int y)
 void init() 
 {
 	skybox = new Skybox();
-	skybox->loadSkybox();
+	skybox->LoadTextures();
 
 	terrain = new Terrain();
+
+	water = new Water();
 
 	glutIgnoreKeyRepeat(1);
 	glutKeyboardFunc(processNormalKeys);

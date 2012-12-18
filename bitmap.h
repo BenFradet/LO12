@@ -66,9 +66,9 @@ public:
 	Bitmap(void);
 	Bitmap(char*, int);
 	~Bitmap();
-	bool loadBmp(char*, int);
-	void convertToGray(unsigned char*);
-	bool loadTexture();
+	bool LoadBmp(char*, int);
+	void ConvertToGray(unsigned char*);
+	//bool LoadTexture();
 	
 private:
 	BitmapFileHeader bmfh;
@@ -77,9 +77,9 @@ private:
 	int padWidth;
 	unsigned int dataSize;
 
-	void reset(void);
-	bool convert24(unsigned char*);
-	bool convert8(unsigned char*);
+	void Reset(void);
+	bool Convert24(unsigned char*);
+	bool Convert8(unsigned char*);
 };
 
 #endif

@@ -2,13 +2,13 @@
 
 Bitmap::Bitmap()
 {
-	reset();
+	Reset();
 }
 
 Bitmap::Bitmap(char* file, int terrain)
 {
-	reset();
-	loadBmp(file, terrain);
+	Reset();
+	LoadBmp(file, terrain);
 }
 
 Bitmap::~Bitmap()
@@ -19,7 +19,7 @@ Bitmap::~Bitmap()
 		delete[] data;
 }
 
-bool Bitmap::loadBmp(char* file, int terrain)
+bool Bitmap::LoadBmp(char* file, int terrain)
 {
 	FILE* in;
 	unsigned char* tempData;
@@ -106,11 +106,11 @@ bool Bitmap::loadBmp(char* file, int terrain)
 			padWidth++;
 
 		if(bpp == 8)
-			loaded = convert8(tempData);
+			loaded = Convert8(tempData);
 		if(bpp == 24)
-			loaded = convert24(tempData);
+			loaded = Convert24(tempData);
 		if(terrain)
-			convertToGray(tempData);
+			ConvertToGray(tempData);
 
 		delete[] tempData;
 		
@@ -119,7 +119,7 @@ bool Bitmap::loadBmp(char* file, int terrain)
 		return loaded;
 }
 
-void Bitmap::reset()
+void Bitmap::Reset()
 {
 	loaded = false;
 	colors = 0;
@@ -127,7 +127,7 @@ void Bitmap::reset()
 	error ="";
 }
 
-bool Bitmap::convert24(unsigned char* tempData)
+bool Bitmap::Convert24(unsigned char* tempData)
 {
 	int offset, diff;
 
@@ -175,7 +175,7 @@ bool Bitmap::convert24(unsigned char* tempData)
 	return true;
 }
 
-bool Bitmap::convert8(unsigned char* tempData)
+bool Bitmap::Convert8(unsigned char* tempData)
 {
 	int offset, diff;
 	diff = width * height * RGB_BYTE_SIZE;
@@ -224,7 +224,7 @@ bool Bitmap::convert8(unsigned char* tempData)
 	return true;
 }
 
-void Bitmap::convertToGray(unsigned char* tempData)
+void Bitmap::ConvertToGray(unsigned char* tempData)
 {
 	unsigned int size = width * height;
 	data = new unsigned char[size];
@@ -236,7 +236,7 @@ void Bitmap::convertToGray(unsigned char* tempData)
 	}
 }
 
-bool Bitmap::loadTexture()
+/*bool Bitmap::loadTexture()
 {
 	GLuint tex = 0;
 
@@ -258,4 +258,4 @@ bool Bitmap::loadTexture()
 		return false;
 
 	return true;
-}
+}*/

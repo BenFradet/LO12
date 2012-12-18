@@ -8,11 +8,11 @@
 class Billboard
 {
 public:
-	void billboardCylindricalBegin();
-	void billboardCylindricalBegin(float camX, float camY, float camZ, float objX, float objY, float objZ);
-	void billboardEnd();
+	void CylindricalBegin();
+	void CylindricalBegin(float camX, float camY, float camZ, float objX, float objY, float objZ);
+	void End();
 
-	GLuint loadTexture();
+	GLuint LoadTexture();
 };
 
 #endif

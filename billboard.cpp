@@ -1,6 +1,6 @@
 #include "billboard.h"
 
-void Billboard::billboardCylindricalBegin()
+void Billboard::CylindricalBegin()
 {
 	float modelView[16];
 	int i, j;
@@ -21,7 +21,7 @@ void Billboard::billboardCylindricalBegin()
 	glLoadMatrixf(modelView);
 }
 
-void Billboard::billboardCylindricalBegin(float camX, float camY, float camZ, float objX, float objY, float objZ)
+void Billboard::CylindricalBegin(float camX, float camY, float camZ, float objX, float objY, float objZ)
 {
 	float lookAt[3], objToCamProj[3], upAux[3];
 	float modelView[16], angleCosine;
@@ -46,12 +46,12 @@ void Billboard::billboardCylindricalBegin(float camX, float camY, float camZ, fl
       glRotatef(acos(angleCosine)*180/3.14,upAux[0], upAux[1], upAux[2]);
 }
 
-void Billboard::billboardEnd()
+void Billboard::End()
 {
 	glPopMatrix();
 }
 
-GLuint Billboard::loadTexture()
+GLuint Billboard::LoadTexture()
 {
 	GLuint texName;
 
@@ -84,7 +84,7 @@ GLuint Billboard::loadTexture()
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, w, h, 0, GL_RGBA, GL_UNSIGNED_BYTE, tex);
 
 	delete image;
-	delete tex;
+	delete[] tex;
 
 	return texName;
 }

@@ -10,8 +10,8 @@ class Skybox
 public:
 	GLuint* tabTextures;
 	Bitmap* textures;
-	int loadSkybox();
-	void drawSkybox();
+	int LoadTextures();
+	void Draw();
 };
 
 #endif

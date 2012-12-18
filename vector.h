@@ -6,6 +6,7 @@
 class Vector
 {
 	float* v;
+	float v1, v2, v3;
 public:
 	Vector(int x = 0, int y = 0, int z = 0);
 	~Vector();
@@ -15,6 +16,7 @@ public:
 	float operator[](int i);
 
 	static void normalize(float*);
+	static void normalize(float&, float&, float&);
 	static void crossProduct(float*, float*, float*);
 	static float dotProduct(float*, float*);
 };

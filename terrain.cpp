@@ -152,7 +152,7 @@ int Terrain::LoadFromImage(char* filename, int normal)
 	if(heights != NULL)
 		Destroy();
 
-	if(!bm->loadBmp(filename, 1))
+	if(!bm->LoadBmp(filename, 1))
 		return (TERRAIN_ERROR_LOADING_IMAGE);
 
 	mode = bm->bpp / 8;
@@ -358,7 +358,7 @@ GLuint Terrain::LoadTextures()
 	delete rock;
 	delete snow;
 
-	delete tex;
+	delete[] tex;
 
 	return texName;
 }

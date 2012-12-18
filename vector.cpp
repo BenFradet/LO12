@@ -6,6 +6,9 @@ Vector::Vector(int x, int y, int z)
 	v[1] = x;
 	v[2] = y;
 	v[3] = z;
+	v1 = x;
+	v2 = y;
+	v3 = z;
 }
 
 Vector::~Vector()
@@ -51,9 +54,23 @@ float Vector::operator[](int i)
 void Vector::normalize(float* t)
 {
 	float d = sqrt(*t * *t + *(t + 1) * *(t + 1) + *(t + 2) * *(t+2));
-	*t /= d;
-	*(t + 1) /= d;
-	*(t + 2) /= d;
+	if(d == 0)
+	{
+		*t /= d;
+		*(t + 1) /= d;
+		*(t + 2) /= d;
+	}
+}
+
+void Vector::normalize(float& x, float& y, float& z)
+{
+	float d = sqrt(x * x + y * y + z * z);
+	if(d == 0)
+	{
+		x /= d;
+		y /= d;
+		z /= d;
+	}
 }
 
 void Vector::crossProduct(float* vf, float* v1, float* v2)

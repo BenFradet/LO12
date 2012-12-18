@@ -1,6 +1,6 @@
 #include "skybox.h"
 
-int Skybox::loadSkybox()
+int Skybox::LoadTextures()
 {
 	tabTextures = new GLuint[6];
 
@@ -8,12 +8,12 @@ int Skybox::loadSkybox()
 
 	glGenTextures(6, tabTextures);
 
-	textures[0].loadBmp("Data/skybox1/XN.bmp", 0);
-	textures[1].loadBmp("Data/skybox1/XP.bmp", 0);
-	textures[2].loadBmp("Data/skybox1/YN.bmp", 0);
-	textures[3].loadBmp("Data/skybox1/YP.bmp", 0);
-	textures[4].loadBmp("Data/skybox1/ZN.bmp", 0);
-	textures[5].loadBmp("Data/skybox1/ZP.bmp", 0);
+	textures[0].LoadBmp("Data/skybox1/XN.bmp", 0);
+	textures[1].LoadBmp("Data/skybox1/XP.bmp", 0);
+	textures[2].LoadBmp("Data/skybox1/YN.bmp", 0);
+	textures[3].LoadBmp("Data/skybox1/YP.bmp", 0);
+	textures[4].LoadBmp("Data/skybox1/ZN.bmp", 0);
+	textures[5].LoadBmp("Data/skybox1/ZP.bmp", 0);
 
     for(int i=0;i<6;i++) 
 	{
@@ -28,7 +28,7 @@ int Skybox::loadSkybox()
     return 0;
 }
 
-void Skybox::drawSkybox()
+void Skybox::Draw()
 {
 	float t=1.0;
 	glDisable(GL_DEPTH_TEST);
