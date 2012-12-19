@@ -295,8 +295,8 @@ void renderScene(void)
 	glEnable(GL_TEXTURE_GEN_T);
 	
 	water->CreateRainDrop();
-	water->Draw();
-	//water->Exit();
+	/*water->Draw();
+	water->Exit();*/
 
 	glPopMatrix();
 

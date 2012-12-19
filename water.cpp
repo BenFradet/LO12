@@ -1,8 +1,26 @@
 #include "water.h"
 
+Water::Water()
+{
+	position = new GLfloat[SIZE * SIZE]();
+	velocity = new GLfloat[SIZE * SIZE]();
+
+	vertices = new GLfloat[3 * SIZE * SIZE]();
+	normals = new GLfloat[3 * SIZE * SIZE]();
+}
+
+Water::~Water()
+{
+	delete[] position;
+	delete[] velocity;
+
+	delete[] vertices;
+	delete[] normals;
+}
+
 void Water::CreateRainDrop()
 {
-	velocity[(rand()%250 + 6) * SIZE + rand()%250 + 6] = 1060;
+	velocity[(rand()%(SIZE - 6) + 6) * SIZE + rand()%(SIZE - 6) + 6] = 1060;
 }
 
 void Water::Draw()
@@ -23,17 +41,17 @@ void Water::Draw()
 	for(int i = 0; i < SIZE; i++)
 		for(int j = 0; j < SIZE; j++)
 		{
-			*(vertices + i * SIZE + j) = (i - SIZE / 2) / SIZE * 5;
-			*(vertices + i * SIZE + j + 1) = (position[i * SIZE + j] / 1024) / SIZE * 3;
-			*(vertices + i * SIZE + j + 2) = (j - SIZE / 2) / SIZE * 5;
+			*(vertices + i * 3 * SIZE + j * 3) = (i - SIZE / 2) / SIZE * 5;
+			*(vertices + i * 3 * SIZE + j * 3 + 1) = (position[i * SIZE + j] / 1024) / SIZE * 3;
+			*(vertices + i * 3 * SIZE + j * 3 + 2) = (j - SIZE / 2) / SIZE * 5;
 		}
 
 	for(int i = 0; i < SIZE; i++)
 		for(int j = 0; j < SIZE; j++)
 		{
-			*(normals + i * SIZE + j) = position[(i + 1) * SIZE + j] - position[(i - 1) * SIZE + j];
-			*(normals + i * SIZE + j + 1) = - 4 * SIZE;
-			*(normals + i * SIZE + j + 2) = position[i * SIZE + j + 1] - position[i * SIZE + j - 1];
+			*(normals + i * 3 * SIZE + j * 3) = position[(i + 1) * SIZE + j] - position[(i - 1) * SIZE + j];
+			*(normals + i * 3 * SIZE + j * 3 + 1) = - 4 * SIZE;
+			*(normals + i * 3 * SIZE + j * 3 + 2) = position[i * SIZE + j + 1] - position[i * SIZE + j - 1];
 
 			Vector::normalize(normals + i * SIZE + j);
 		}
@@ -45,12 +63,12 @@ void Water::Draw()
 		glBegin(GL_QUAD_STRIP);
 			for(int i = 0; i < SIZE; i++)
 			{
-				glNormal3fv(&normals[i * SIZE + j + 1]);
+				glNormal3f(normals[i * 3 * SIZE + j * 3 + 3], normals[i * 3 * SIZE + j * 3 + 4], normals[i * 3 * SIZE + j * 3 + 5]);
 				glTexCoord2f(i / SIZE, (j + 1) / SIZE);
-				glVertex3fv(&vertices[i * SIZE + j + 1]);
-				glNormal3fv(&normals[i * SIZE + j]);
+				glVertex3f(vertices[i * 3 * SIZE + j * 3 + 3], vertices[i * 3 * SIZE + j * 3 + 4], vertices[i * 3 * SIZE + j * 3 + 5]);
+				glNormal3f(normals[i * 3 * SIZE + j * 3], normals[i * 3 * SIZE + j * 3 + 1], normals[i * 3 * SIZE + j * 3 + 2]);
 				glTexCoord2f(i / SIZE, j / SIZE);
-				glVertex3fv(&vertices[i * SIZE + j]);
+				glVertex3f(vertices[i * 3 * SIZE + j * 3], vertices[i * 3 * SIZE + j * 3 + 1], vertices[i * 3 * SIZE + j * 3 + 2]);
 			}
 	}
 	glDisable(GL_TEXTURE_2D);	

@@ -19,15 +19,18 @@ class Water
 	int rainInterval;
 	GLfloat viscosity;
 
-	GLfloat position[SIZE * SIZE];
-	GLfloat velocity[SIZE * SIZE];
+	GLfloat* position;
+	GLfloat* velocity;
 
-	GLfloat vertices[3 * SIZE * SIZE];
-	GLfloat normals[3 * SIZE * SIZE];
+	GLfloat* vertices;
+	GLfloat* normals;
 
 	GLfloat xAngle, yAngle;
 
 public:
+	Water();
+	~Water();
+
 	void CreateRainDrop();
 	void Draw();
 	GLuint LoadTexture();
