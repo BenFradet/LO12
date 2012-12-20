@@ -2,71 +2,91 @@
 
 Water::Water()
 {
-	position = new GLfloat[SIZE * SIZE]();
+	/*position = new GLfloat[SIZE * SIZE]();
 	velocity = new GLfloat[SIZE * SIZE]();
 
 	vertices = new GLfloat[3 * SIZE * SIZE]();
-	normals = new GLfloat[3 * SIZE * SIZE]();
+	normals = new GLfloat[3 * SIZE * SIZE]();*/
 }
 
 Water::~Water()
 {
-	delete[] position;
+	/*delete[] position;
 	delete[] velocity;
 
 	delete[] vertices;
-	delete[] normals;
+	delete[] normals;*/
 }
 
 void Water::CreateRainDrop()
 {
-	velocity[(rand()%(SIZE - 6) + 6) * SIZE + rand()%(SIZE - 6) + 6] = 1060;
+	//velocity[(rand()%(SIZE - 6) + 6) * SIZE + rand()%(SIZE - 6) + 6] = 1060;
+	velocity[10] = 1060;
 }
 
 void Water::Draw()
 {
-	for(int i = 6; i < SIZE - 6; i++)
-		for(int j = 6; j < SIZE - 6; j++)
+	for(int i = 0; i < SIZE; i++)
+	{
+		for(int j = 0; j < SIZE; j++)
+		{
 			velocity[i * SIZE + j] = velocity[i * SIZE + j] + (position[i * SIZE + j] - 
 				(4*(position[(i - 1) * SIZE + j] + position[(i + 1) * SIZE + j] + position[i * SIZE + j - 1] + position[i * SIZE + j + 1])
 				+ position[(i - 1) * SIZE + j - 1] + position[(i + 1) * SIZE + j - 1] + position[(i - 1) * SIZE + j + 1] + position[(i + 1) * SIZE + j + 1]) / 25.0f) / 7.0f;
+		}
+	}
 
-	for(int i = 6; i < SIZE - 6; i++)
-		for(int j = 6; i < SIZE - 6; i++)
+	for(int i = 0; i < SIZE; i++)
+	{
+		for(int j = 0; j < SIZE; j++)
 		{
 			position[i * SIZE + j] -= velocity[i * SIZE + j];
 			velocity[i * SIZE + j] *= viscosity;
 		}
+	}
 
 	for(int i = 0; i < SIZE; i++)
+	{
 		for(int j = 0; j < SIZE; j++)
 		{
-			*(vertices + i * 3 * SIZE + j * 3) = (i - SIZE / 2) / SIZE * 5;
-			*(vertices + i * 3 * SIZE + j * 3 + 1) = (position[i * SIZE + j] / 1024) / SIZE * 3;
-			*(vertices + i * 3 * SIZE + j * 3 + 2) = (j - SIZE / 2) / SIZE * 5;
+			*(vertices + i * 3 * SIZE + j * 3) = ((i - SIZE / 2) / SIZE) * 5;
+			*(vertices + i * 3 * SIZE + j * 3 + 1) = ((position[i * SIZE + j] / 1024) / SIZE) * 3;
+			*(vertices + i * 3 * SIZE + j * 3 + 2) = ((j - SIZE / 2) / SIZE) * 5;
 		}
+	}
 
 	for(int i = 0; i < SIZE; i++)
+	{
 		for(int j = 0; j < SIZE; j++)
 		{
-			*(normals + i * 3 * SIZE + j * 3) = position[(i + 1) * SIZE + j] - position[(i - 1) * SIZE + j];
-			*(normals + i * 3 * SIZE + j * 3 + 1) = - 4 * SIZE;
-			*(normals + i * 3 * SIZE + j * 3 + 2) = position[i * SIZE + j + 1] - position[i * SIZE + j - 1];
+			if(i > 0 && j > 0 && i < SIZE && j < SIZE)
+			{
+				*(normals + i * 3 * SIZE + j * 3) = position[(i + 1) * SIZE + j] - position[(i - 1) * SIZE + j];
+				*(normals + i * 3 * SIZE + j * 3 + 1) = - 2048;
+				*(normals + i * 3 * SIZE + j * 3 + 2) = position[i * SIZE + j + 1] - position[i * SIZE + j - 1];
 
-			Vector::normalize(normals + i * SIZE + j);
+				Vector::normalize(&normals[i * 3 * SIZE + j * 3], &normals[i * 3 * SIZE + j * 3 + 1], &normals[i * 3 * SIZE + j * 3 + 2]);
+			}
+			else
+			{
+				*(normals + i * 3 * SIZE + j * 3) = 0;
+				*(normals + i * 3 * SIZE + j * 3 + 1) = 1;
+				*(normals + i * 3 * SIZE + j * 3 + 2) = 0;
+			}
 		}
+	}
 
 	glEnable(GL_TEXTURE_2D);
 	glBindTexture(GL_TEXTURE_2D, waterTexture);
-	for(int j = 0; j < SIZE - 1; j++)
+	for(int i = 0; i < SIZE; i++)
 	{
 		glBegin(GL_QUAD_STRIP);
-			for(int i = 0; i < SIZE; i++)
+			for(int j = 0; j < SIZE; j++)
 			{
-				glNormal3f(normals[i * 3 * SIZE + j * 3 + 3], normals[i * 3 * SIZE + j * 3 + 4], normals[i * 3 * SIZE + j * 3 + 5]);
+				//glNormal3f(normals[i * 3 * SIZE + (j + 1) * 3], normals[i * 3 * SIZE + (j + 1)* 3 + 1], normals[i * 3 * SIZE + (j + 1) * 3 + 2]);
 				glTexCoord2f(i / SIZE, (j + 1) / SIZE);
 				glVertex3f(vertices[i * 3 * SIZE + j * 3 + 3], vertices[i * 3 * SIZE + j * 3 + 4], vertices[i * 3 * SIZE + j * 3 + 5]);
-				glNormal3f(normals[i * 3 * SIZE + j * 3], normals[i * 3 * SIZE + j * 3 + 1], normals[i * 3 * SIZE + j * 3 + 2]);
+				//glNormal3f(normals[i * 3 * SIZE + j * 3], normals[i * 3 * SIZE + j * 3 + 1], normals[i * 3 * SIZE + j * 3 + 2]);
 				glTexCoord2f(i / SIZE, j / SIZE);
 				glVertex3f(vertices[i * 3 * SIZE + j * 3], vertices[i * 3 * SIZE + j * 3 + 1], vertices[i * 3 * SIZE + j * 3 + 2]);
 			}

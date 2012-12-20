@@ -19,11 +19,11 @@ class Water
 	int rainInterval;
 	GLfloat viscosity;
 
-	GLfloat* position;
-	GLfloat* velocity;
+	GLfloat position[SIZE * SIZE];
+	GLfloat velocity[SIZE * SIZE];
 
-	GLfloat* vertices;
-	GLfloat* normals;
+	GLfloat vertices[SIZE * SIZE * 3];
+	GLfloat normals[SIZE * SIZE * 3];
 
 	GLfloat xAngle, yAngle;
 

@@ -16,7 +16,7 @@ public:
 	float operator[](int i);
 
 	static void normalize(float*);
-	static void normalize(float&, float&, float&);
+	static void normalize(float*, float*, float*);
 	static void crossProduct(float*, float*, float*);
 	static float dotProduct(float*, float*);
 };

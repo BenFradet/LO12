@@ -62,14 +62,14 @@ void Vector::normalize(float* t)
 	}
 }
 
-void Vector::normalize(float& x, float& y, float& z)
+void Vector::normalize(float* x, float* y, float* z)
 {
-	float d = sqrt(x * x + y * y + z * z);
-	if(d == 0)
+	float d = sqrt(*x * *x + *y * *y + *z * *z);
+	if(d != 0)
 	{
-		x /= d;
-		y /= d;
-		z /= d;
+		*x /= d;
+		*y /= d;
+		*z /= d;
 	}
 }
 
