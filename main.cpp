@@ -202,12 +202,27 @@ void renderScene(void)
 	
 	//gluLookAt(5, 75, 15, 5, 75, 0, 0, 1, 0);
 
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
+
+	//Draw water
+
+	glPushMatrix();
+	glLoadIdentity();
+	glTranslatef(0, 10, 0);
+	glColor3f(0.85f, 1.0f, 0.85f);
+	
+	water->CreateRainDrop();
+	water->Draw();
+	//water->Exit();
+
+	glPopMatrix();
+
+	//
 
 	glDisable(GL_BLEND);
 	glDisable(GL_TEXTURE_GEN_S);
 	glDisable(GL_TEXTURE_GEN_T);
-
+	
 	skybox->Draw();
 
 	glLightfv(GL_LIGHT0,GL_POSITION,lPosition);
@@ -279,28 +294,6 @@ void renderScene(void)
 		
 		billboard->End();
 	}
-	
-	glDisable(GL_TEXTURE_2D);
-	glDisable(GL_ALPHA_TEST);
-
-	//Draw water
-
-	glPushMatrix();
-	glLoadIdentity();
-	glTranslatef(0, 30, 0);
-	glColor3f(0.85f, 1.0f, 0.85f);
-
-	glEnable(GL_BLEND);
-	glEnable(GL_TEXTURE_GEN_S);
-	glEnable(GL_TEXTURE_GEN_T);
-	
-	/*water->CreateRainDrop();
-	water->Draw();
-	water->Exit();*/
-
-	glPopMatrix();
-
-	//
 
 	frame++;
 	time=glutGet(GLUT_ELAPSED_TIME);

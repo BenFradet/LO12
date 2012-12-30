@@ -2,11 +2,11 @@
 
 Water::Water()
 {
-	/*position = new GLfloat[SIZE * SIZE]();
-	velocity = new GLfloat[SIZE * SIZE]();
+	/*position = new GLfloat[SIZEG * SIZEG]();
+	velocity = new GLfloat[SIZEG * SIZEG]();
 
-	vertices = new GLfloat[3 * SIZE * SIZE]();
-	normals = new GLfloat[3 * SIZE * SIZE]();*/
+	vertices = new GLfloat[3 * SIZEG * SIZEG]();
+	normals = new GLfloat[3 * SIZEG * SIZEG]();*/
 }
 
 Water::~Water()
@@ -20,86 +20,110 @@ Water::~Water()
 
 void Water::CreateRainDrop()
 {
-	//velocity[(rand()%(SIZE - 6) + 6) * SIZE + rand()%(SIZE - 6) + 6] = 1060;
+	//velocity[(rand()%(SIZEG - 6) + 6) * SIZEG + rand()%(SIZEG - 6) + 6] = 1060;
 	velocity[10] = 1060;
 }
 
 void Water::Draw()
 {
-	for(int i = 0; i < SIZE; i++)
+	for(int i = 2; i < SIZEG - 2; i++)
 	{
-		for(int j = 0; j < SIZE; j++)
+		for(int j = 2; j < SIZEG - 2; j++)
 		{
-			velocity[i * SIZE + j] = velocity[i * SIZE + j] + (position[i * SIZE + j] - 
-				(4*(position[(i - 1) * SIZE + j] + position[(i + 1) * SIZE + j] + position[i * SIZE + j - 1] + position[i * SIZE + j + 1])
-				+ position[(i - 1) * SIZE + j - 1] + position[(i + 1) * SIZE + j - 1] + position[(i - 1) * SIZE + j + 1] + position[(i + 1) * SIZE + j + 1]) / 25.0f) / 7.0f;
+			velocity[i * SIZEG + j] = velocity[i * SIZEG + j] + (position[i * SIZEG + j] - 
+				(4*(position[(i - 1) * SIZEG + j] + position[(i + 1) * SIZEG + j] + position[i * SIZEG + j - 1] + position[i * SIZEG + j + 1])
+				+ position[(i - 1) * SIZEG + j - 1] + position[(i + 1) * SIZEG + j - 1] + position[(i - 1) * SIZEG + j + 1] + position[(i + 1) * SIZEG + j + 1]) / 25.0f) / 7.0f;
 		}
 	}
 
-	for(int i = 0; i < SIZE; i++)
+	for(int i = 2; i < SIZEG - 2; i++)
 	{
-		for(int j = 0; j < SIZE; j++)
+		for(int j = 2; j < SIZEG - 2; j++)
 		{
-			position[i * SIZE + j] -= velocity[i * SIZE + j];
-			velocity[i * SIZE + j] *= viscosity;
+			position[i * SIZEG + j] -= velocity[i * SIZEG + j];
+			velocity[i * SIZEG + j] *= viscosity;
 		}
 	}
 
-	for(int i = 0; i < SIZE; i++)
+	for(int i = 0; i < SIZEG; i++)
 	{
-		for(int j = 0; j < SIZE; j++)
+		for(int j = 0; j < SIZEG; j++)
 		{
-			*(vertices + i * 3 * SIZE + j * 3) = ((i - SIZE / 2) / SIZE) * 5;
-			*(vertices + i * 3 * SIZE + j * 3 + 1) = ((position[i * SIZE + j] / 1024) / SIZE) * 3;
-			*(vertices + i * 3 * SIZE + j * 3 + 2) = ((j - SIZE / 2) / SIZE) * 5;
+			*(vertices + i * 3 * SIZEG + j * 3) = (i - SIZEG / 2) / SIZEG * 5;
+			*(vertices + i * 3 * SIZEG + j * 3 + 1) = (position[i * SIZEG + j] / 1024) / SIZEG * 3;
+			*(vertices + i * 3 * SIZEG + j * 3 + 2) = (j - SIZEG / 2) / SIZEG * 5;
 		}
 	}
 
-	for(int i = 0; i < SIZE; i++)
+	for(int i = 0; i < SIZEG; i++)
 	{
-		for(int j = 0; j < SIZE; j++)
+		for(int j = 0; j < SIZEG; j++)
 		{
-			if(i > 0 && j > 0 && i < SIZE && j < SIZE)
+			float vecLength;
+			if(i > 0 && j > 0 && i < SIZEG && j < SIZEG)
 			{
-				*(normals + i * 3 * SIZE + j * 3) = position[(i + 1) * SIZE + j] - position[(i - 1) * SIZE + j];
-				*(normals + i * 3 * SIZE + j * 3 + 1) = - 2048;
-				*(normals + i * 3 * SIZE + j * 3 + 2) = position[i * SIZE + j + 1] - position[i * SIZE + j - 1];
+				*(normals + i * 3 * SIZEG + j * 3) = position[(i + 1) * SIZEG + j] - position[(i - 1) * SIZEG + j];
+				*(normals + i * 3 * SIZEG + j * 3 + 1) = - 2048;
+				*(normals + i * 3 * SIZEG + j * 3 + 2) = position[i * SIZEG + j + 1] - position[i * SIZEG + j - 1];
 
-				Vector::normalize(&normals[i * 3 * SIZE + j * 3], &normals[i * 3 * SIZE + j * 3 + 1], &normals[i * 3 * SIZE + j * 3 + 2]);
+				vecLength = sqrt(*(normals + i * 3 * SIZEG + j * 3 + 1) * *(normals + i * 3 * SIZEG + j * 3 + 1) + 
+					*(normals + i * 3 * SIZEG + j * 3 + 2) * *(normals + i * 3 * SIZEG + j * 3) + 
+					*(normals + i * 3 * SIZEG + j * 3) * *(normals + i * 3 * SIZEG + j * 3));
+				if(vecLength != 0)
+				{
+					*(normals + i * 3 * SIZEG + j * 3) /= vecLength;
+					*(normals + i * 3 * SIZEG + j * 3 + 1) /= vecLength;
+					*(normals + i * 3 * SIZEG + j * 3 + 2) /= vecLength;
+				}
+
+				//Vector::normalize(&normals[i * 3 * SIZEG + j * 3], &normals[i * 3 * SIZEG + j * 3 + 1], &normals[i * 3 * SIZEG + j * 3 + 2]);
 			}
 			else
 			{
-				*(normals + i * 3 * SIZE + j * 3) = 0;
-				*(normals + i * 3 * SIZE + j * 3 + 1) = 1;
-				*(normals + i * 3 * SIZE + j * 3 + 2) = 0;
+				*(normals + i * 3 * SIZEG + j * 3) = 0;
+				*(normals + i * 3 * SIZEG + j * 3 + 1) = 1;
+				*(normals + i * 3 * SIZEG + j * 3 + 2) = 0;
 			}
 		}
 	}
 
-	glEnable(GL_TEXTURE_2D);
+	/*double eqr[] = {0, 1, 0, 0};
+
+	glColorMask(0, 0, 0, 0);
+	glEnable(GL_STENCIL_TEST);
+	glStencilFunc(GL_ALWAYS, 1, 1);
+	glStencilOp(GL_KEEP, GL_KEEP, GL_REPLACE);*/
+
 	glBindTexture(GL_TEXTURE_2D, waterTexture);
-	for(int i = 0; i < SIZE; i++)
+	
+	glEnable(GL_BLEND);
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE);
+	glEnable(GL_TEXTURE_GEN_S);
+	glEnable(GL_TEXTURE_GEN_T);
+
+	for(int j = 0; j < SIZEG - 1; j++)
 	{
 		glBegin(GL_QUAD_STRIP);
-			for(int j = 0; j < SIZE; j++)
+			for(int i = 0; i < SIZEG; i++)
 			{
-				//glNormal3f(normals[i * 3 * SIZE + (j + 1) * 3], normals[i * 3 * SIZE + (j + 1)* 3 + 1], normals[i * 3 * SIZE + (j + 1) * 3 + 2]);
-				glTexCoord2f(i / SIZE, (j + 1) / SIZE);
-				glVertex3f(vertices[i * 3 * SIZE + j * 3 + 3], vertices[i * 3 * SIZE + j * 3 + 4], vertices[i * 3 * SIZE + j * 3 + 5]);
-				//glNormal3f(normals[i * 3 * SIZE + j * 3], normals[i * 3 * SIZE + j * 3 + 1], normals[i * 3 * SIZE + j * 3 + 2]);
-				glTexCoord2f(i / SIZE, j / SIZE);
-				glVertex3f(vertices[i * 3 * SIZE + j * 3], vertices[i * 3 * SIZE + j * 3 + 1], vertices[i * 3 * SIZE + j * 3 + 2]);
+				glNormal3f(normals[i * 3 * SIZEG + (j + 1) * 3], normals[i * 3 * SIZEG + (j + 1)* 3 + 1], normals[i * 3 * SIZEG + (j + 1) * 3 + 2]);
+				glTexCoord2f(i / SIZEG, (j + 1) / SIZEG);
+				glVertex3f(vertices[i * 3 * SIZEG + j * 3 + 3], vertices[i * 3 * SIZEG + j * 3 + 4], vertices[i * 3 * SIZEG + j * 3 + 5]);
+				glNormal3f(normals[i * 3 * SIZEG + j * 3], normals[i * 3 * SIZEG + j * 3 + 1], normals[i * 3 * SIZEG + j * 3 + 2]);
+				glTexCoord2f(i / SIZEG, j / SIZEG);
+				glVertex3f(vertices[i * 3 * SIZEG + j * 3], vertices[i * 3 * SIZEG + j * 3 + 1], vertices[i * 3 * SIZEG + j * 3 + 2]);
 			}
 	}
-	glDisable(GL_TEXTURE_2D);	
+
+	glDisable(GL_TEXTURE_GEN_S);
+	glDisable(GL_TEXTURE_GEN_T);
+	glDisable(GL_BLEND);
+	glDisable(GL_DEPTH_TEST);
 }
 
 void Water::Exit()
 {
-	glDisable(GL_DEPTH_TEST);
-	glDisable(GL_BLEND);
-	glDisable(GL_TEXTURE_GEN_S);
-	glDisable(GL_TEXTURE_GEN_T);
+	
 }
 
 GLuint Water::LoadTexture()
@@ -125,14 +149,18 @@ GLuint Water::LoadTexture()
 
 void Water::Init()
 {
+	waterTexture = LoadTexture();
+
 	glShadeModel(GL_SMOOTH);
 	glClearDepth(1.0f);
+	//glClearColor(1, 1, 1, 1);
+	glClearStencil(0);
 	glEnable(GL_DEPTH_TEST);
-	glDepthFunc(GL_LESS);
+	glDepthFunc(GL_LEQUAL);
 	glBlendFunc(GL_SRC_COLOR, GL_ONE);
 	glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST);
 
-	waterTexture = LoadTexture();
+	glEnable(GL_TEXTURE_2D);
 
 	glTexGeni(GL_S, GL_TEXTURE_GEN_MODE, GL_SPHERE_MAP);
 	glTexGeni(GL_T, GL_TEXTURE_GEN_MODE, GL_SPHERE_MAP);
@@ -140,10 +168,10 @@ void Water::Init()
 	viscosity = 0.96;
 	rainInterval = 1000;
 	
-	for(int i = 0; i < SIZE; i++)
-		for(int j = 0; j < SIZE; j++)
+	for(int i = 0; i < SIZEG; i++)
+		for(int j = 0; j < SIZEG; j++)
 		{
-			position[i * SIZE + j] = 0;
-			velocity[i * SIZE + j] = 0;
+			position[i * SIZEG + j] = 0;
+			velocity[i * SIZEG + j] = 0;
 		}
 }

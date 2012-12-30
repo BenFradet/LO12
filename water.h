@@ -10,7 +10,7 @@
 #include "vector.h"
 #include "bitmap.h"
 
-#define	SIZE 63
+#define	SIZEG 63
 
 class Water
 {
@@ -19,11 +19,11 @@ class Water
 	int rainInterval;
 	GLfloat viscosity;
 
-	GLfloat position[SIZE * SIZE];
-	GLfloat velocity[SIZE * SIZE];
+	GLfloat position[SIZEG * SIZEG];
+	GLfloat velocity[SIZEG * SIZEG];
 
-	GLfloat vertices[SIZE * SIZE * 3];
-	GLfloat normals[SIZE * SIZE * 3];
+	GLfloat vertices[SIZEG * SIZEG * 3];
+	GLfloat normals[SIZEG * SIZEG * 3];
 
 	GLfloat xAngle, yAngle;
 
