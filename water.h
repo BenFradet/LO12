@@ -14,8 +14,6 @@
 
 class Water
 {
-	GLuint waterTexture;
-
 	int rainInterval;
 	GLfloat viscosity;
 
@@ -28,6 +26,7 @@ class Water
 	GLfloat xAngle, yAngle;
 
 public:
+	GLuint waterTexture;
 	Water();
 	~Water();
 

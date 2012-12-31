@@ -211,17 +211,31 @@ void renderScene(void)
 	glTranslatef(0, 10, 0);
 	glColor3f(0.85f, 1.0f, 0.85f);
 	
+	glEnable(GL_TEXTURE_2D);
 	water->CreateRainDrop();
 	water->Draw();
-	//water->Exit();
+	water->Exit();
 
 	glPopMatrix();
+
+	glBindTexture(GL_TEXTURE_2D, water->waterTexture);
+	glBegin(GL_QUADS);
+			glTexCoord2f(0, 0);
+			glVertex3f(0, 60, 0);
+			glTexCoord2f(1, 0);
+			glVertex3f(10, 60, 0);
+			glTexCoord2f(1, 1);
+			glVertex3f(10, 70, 0);
+			glTexCoord2f(0, 1);
+			glVertex3f(0, 70, 0);
+	glEnd();
 
 	//
 
 	glDisable(GL_BLEND);
 	glDisable(GL_TEXTURE_GEN_S);
 	glDisable(GL_TEXTURE_GEN_T);
+	glEnable(GL_TEXTURE_2D);
 	
 	skybox->Draw();
 

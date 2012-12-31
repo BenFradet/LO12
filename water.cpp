@@ -49,9 +49,9 @@ void Water::Draw()
 	{
 		for(int j = 0; j < SIZEG; j++)
 		{
-			*(vertices + i * 3 * SIZEG + j * 3) = (i - SIZEG / 2) / SIZEG * 5;
-			*(vertices + i * 3 * SIZEG + j * 3 + 1) = (position[i * SIZEG + j] / 1024) / SIZEG * 3;
-			*(vertices + i * 3 * SIZEG + j * 3 + 2) = (j - SIZEG / 2) / SIZEG * 5;
+			*(vertices + i * 3 * SIZEG + j * 3) = (i - SIZEG / 2.0) / (float)SIZEG * 5;
+			*(vertices + i * 3 * SIZEG + j * 3 + 1) = (position[i * SIZEG + j] / 1024.0) / (float)SIZEG * 3 + 10;
+			*(vertices + i * 3 * SIZEG + j * 3 + 2) = (j - SIZEG / 2.0) / (float)SIZEG * 5;
 		}
 	}
 
@@ -96,8 +96,8 @@ void Water::Draw()
 
 	glBindTexture(GL_TEXTURE_2D, waterTexture);
 	
-	glEnable(GL_BLEND);
-	glBlendFunc(GL_SRC_ALPHA, GL_ONE);
+	/*glEnable(GL_BLEND);
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE);*/
 	glEnable(GL_TEXTURE_GEN_S);
 	glEnable(GL_TEXTURE_GEN_T);
 
@@ -117,7 +117,7 @@ void Water::Draw()
 
 	glDisable(GL_TEXTURE_GEN_S);
 	glDisable(GL_TEXTURE_GEN_T);
-	glDisable(GL_BLEND);
+	//glDisable(GL_BLEND);
 	glDisable(GL_DEPTH_TEST);
 }
 
