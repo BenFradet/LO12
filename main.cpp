@@ -205,6 +205,12 @@ void renderScene(void)
 
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 
+	//Draw skybox
+
+	skybox->Draw();
+
+	glLightfv(GL_LIGHT0,GL_POSITION,lPosition);
+
 	glMaterialfv(GL_FRONT, GL_SPECULAR, mSpecular);
 	glMaterialfv(GL_FRONT, GL_SHININESS,mShininess);
 	glMaterialfv(GL_FRONT, GL_AMBIENT, cWhite);
@@ -212,6 +218,7 @@ void renderScene(void)
 
 	//Draw water
 
+	glEnable(GL_TEXTURE_2D);
 	glBindTexture(GL_TEXTURE_2D, water->waterTexture);
 	glBegin(GL_QUADS);
 			glTexCoord2f(0, 0);
@@ -223,11 +230,6 @@ void renderScene(void)
 			glTexCoord2f(0, 1);
 			glVertex3f(0, 70, 0);
 	glEnd();
-
-	/*glPushMatrix();
-	glLoadIdentity();
-	glTranslatef(0, 10, 0);
-	glColor3f(0.85f, 1.0f, 0.85f);*/
 	
 	glEnable(GL_BLEND);
 	glEnable(GL_TEXTURE_GEN_S);
@@ -237,16 +239,10 @@ void renderScene(void)
 	water->Draw();
 	water->Exit();
 
-	//glPopMatrix();
-
-	//
-
-	skybox->Draw();
-
-	glLightfv(GL_LIGHT0,GL_POSITION,lPosition);
-
 	//Draw axis
 
+	glPushMatrix();
+	glLoadIdentity();
 	glDisable(GL_LIGHTING);
 	glColor3f(1.0, 0.0, 0.0);
 	glBegin(GL_LINES);
@@ -264,6 +260,7 @@ void renderScene(void)
 		glVertex3f(0.0, 0.0, 100.0);
 	glEnd();
 	glEnable(GL_LIGHTING);
+	glPopMatrix();
 
 	//Draw ground
 
