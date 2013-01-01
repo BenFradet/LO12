@@ -94,7 +94,6 @@ void initScene()
 	//
 	treeTex = billboard->LoadTexture();
 	treeList = createTreePositionsList();
-	water->Init();
 	//
 
 	glLightfv(GL_LIGHT0,GL_AMBIENT,lAmbient);
@@ -204,20 +203,14 @@ void renderScene(void)
 
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 
+	glMaterialfv(GL_FRONT, GL_SPECULAR, mSpecular);
+	glMaterialfv(GL_FRONT, GL_SHININESS,mShininess);
+	glMaterialfv(GL_FRONT, GL_AMBIENT, cWhite);
+	glMaterialfv(GL_FRONT, GL_DIFFUSE, cWhite);
+
 	//Draw water
 
-	glPushMatrix();
-	glLoadIdentity();
-	glTranslatef(0, 10, 0);
-	glColor3f(0.85f, 1.0f, 0.85f);
-	
 	glEnable(GL_TEXTURE_2D);
-	water->CreateRainDrop();
-	water->Draw();
-	water->Exit();
-
-	glPopMatrix();
-
 	glBindTexture(GL_TEXTURE_2D, water->waterTexture);
 	glBegin(GL_QUADS);
 			glTexCoord2f(0, 0);
@@ -229,13 +222,26 @@ void renderScene(void)
 			glTexCoord2f(0, 1);
 			glVertex3f(0, 70, 0);
 	glEnd();
+	glDisable(GL_TEXTURE_2D);
+
+	/*glPushMatrix();
+	glLoadIdentity();
+	glTranslatef(0, 10, 0);
+	glColor3f(0.85f, 1.0f, 0.85f);*/
+	
+	glEnable(GL_TEXTURE_2D);
+	water->CreateRainDrop();
+	water->Draw();
+	water->Exit();
+
+	//glPopMatrix();
 
 	//
 
-	glDisable(GL_BLEND);
+	/*glDisable(GL_BLEND);
 	glDisable(GL_TEXTURE_GEN_S);
 	glDisable(GL_TEXTURE_GEN_T);
-	glEnable(GL_TEXTURE_2D);
+	glEnable(GL_TEXTURE_2D);*/
 	
 	skybox->Draw();
 
@@ -263,10 +269,6 @@ void renderScene(void)
 
 	//Draw ground
 
-	glMaterialfv(GL_FRONT, GL_SPECULAR, mSpecular);
-	glMaterialfv(GL_FRONT, GL_SHININESS,mShininess);
-	glMaterialfv(GL_FRONT, GL_AMBIENT, cWhite);
-	glMaterialfv(GL_FRONT, GL_DIFFUSE, cWhite);
 	glCallList(terrainDL);
 
 	//Draw billboard
@@ -462,6 +464,7 @@ void init()
 	terrain = new Terrain();
 
 	water = new Water();
+	water->Init();
 
 	glutIgnoreKeyRepeat(1);
 	glutKeyboardFunc(processNormalKeys);

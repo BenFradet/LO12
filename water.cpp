@@ -98,9 +98,10 @@ void Water::Draw()
 	
 	/*glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE);*/
-	glEnable(GL_TEXTURE_GEN_S);
-	glEnable(GL_TEXTURE_GEN_T);
+	/*glEnable(GL_TEXTURE_GEN_S);
+	glEnable(GL_TEXTURE_GEN_T);*/
 
+	glColor3f(1, 1, 1);
 	for(int j = 0; j < SIZEG - 1; j++)
 	{
 		glBegin(GL_QUAD_STRIP);
@@ -115,10 +116,10 @@ void Water::Draw()
 			}
 	}
 
-	glDisable(GL_TEXTURE_GEN_S);
+	/*glDisable(GL_TEXTURE_GEN_S);
 	glDisable(GL_TEXTURE_GEN_T);
 	//glDisable(GL_BLEND);
-	glDisable(GL_DEPTH_TEST);
+	//glDisable(GL_DEPTH_TEST);*/
 }
 
 void Water::Exit()
