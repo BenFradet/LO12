@@ -87,21 +87,8 @@ void Water::Draw()
 		}
 	}
 
-	/*double eqr[] = {0, 1, 0, 0};
-
-	glColorMask(0, 0, 0, 0);
-	glEnable(GL_STENCIL_TEST);
-	glStencilFunc(GL_ALWAYS, 1, 1);
-	glStencilOp(GL_KEEP, GL_KEEP, GL_REPLACE);*/
-
 	glBindTexture(GL_TEXTURE_2D, waterTexture);
-	
-	/*glEnable(GL_BLEND);
-	glBlendFunc(GL_SRC_ALPHA, GL_ONE);*/
-	/*glEnable(GL_TEXTURE_GEN_S);
-	glEnable(GL_TEXTURE_GEN_T);*/
 
-	glColor3f(1, 1, 1);
 	for(int j = 0; j < SIZEG - 1; j++)
 	{
 		glBegin(GL_QUAD_STRIP);
@@ -115,11 +102,6 @@ void Water::Draw()
 				glVertex3f(vertices[i * 3 * SIZEG + j * 3], vertices[i * 3 * SIZEG + j * 3 + 1], vertices[i * 3 * SIZEG + j * 3 + 2]);
 			}
 	}
-
-	/*glDisable(GL_TEXTURE_GEN_S);
-	glDisable(GL_TEXTURE_GEN_T);
-	//glDisable(GL_BLEND);
-	//glDisable(GL_DEPTH_TEST);*/
 }
 
 void Water::Exit()
@@ -152,7 +134,7 @@ void Water::Init()
 {
 	waterTexture = LoadTexture();
 
-	glShadeModel(GL_SMOOTH);
+	/*glShadeModel(GL_SMOOTH);
 	glClearDepth(1.0f);
 	//glClearColor(1, 1, 1, 1);
 	glClearStencil(0);
@@ -161,7 +143,7 @@ void Water::Init()
 	glBlendFunc(GL_SRC_COLOR, GL_ONE);
 	glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST);
 
-	glEnable(GL_TEXTURE_2D);
+	glEnable(GL_TEXTURE_2D);*/
 
 	glTexGeni(GL_S, GL_TEXTURE_GEN_MODE, GL_SPHERE_MAP);
 	glTexGeni(GL_T, GL_TEXTURE_GEN_MODE, GL_SPHERE_MAP);

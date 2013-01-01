@@ -34,6 +34,9 @@ void Skybox::Draw()
 	glDisable(GL_DEPTH_TEST);
 	glDisable(GL_LIGHTING);
 
+	glDisable(GL_TEXTURE_GEN_S);
+	glDisable(GL_TEXTURE_GEN_T);
+
 	glEnable(GL_TEXTURE_2D);
 
 	GLint* viewport = new GLint[4];

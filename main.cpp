@@ -185,6 +185,8 @@ void renderScene(void)
 		z = -255;
 	else if(z > 255)
 		z = 255;
+	if(y > 255)
+		y = 255;
 
 	glLoadIdentity();
 	if(navigationMode == WALK)
@@ -210,7 +212,6 @@ void renderScene(void)
 
 	//Draw water
 
-	glEnable(GL_TEXTURE_2D);
 	glBindTexture(GL_TEXTURE_2D, water->waterTexture);
 	glBegin(GL_QUADS);
 			glTexCoord2f(0, 0);
@@ -222,14 +223,16 @@ void renderScene(void)
 			glTexCoord2f(0, 1);
 			glVertex3f(0, 70, 0);
 	glEnd();
-	glDisable(GL_TEXTURE_2D);
 
 	/*glPushMatrix();
 	glLoadIdentity();
 	glTranslatef(0, 10, 0);
 	glColor3f(0.85f, 1.0f, 0.85f);*/
 	
-	glEnable(GL_TEXTURE_2D);
+	glEnable(GL_BLEND);
+	glEnable(GL_TEXTURE_GEN_S);
+	glEnable(GL_TEXTURE_GEN_T);
+	
 	water->CreateRainDrop();
 	water->Draw();
 	water->Exit();
@@ -238,11 +241,6 @@ void renderScene(void)
 
 	//
 
-	/*glDisable(GL_BLEND);
-	glDisable(GL_TEXTURE_GEN_S);
-	glDisable(GL_TEXTURE_GEN_T);
-	glEnable(GL_TEXTURE_2D);*/
-	
 	skybox->Draw();
 
 	glLightfv(GL_LIGHT0,GL_POSITION,lPosition);
@@ -268,6 +266,10 @@ void renderScene(void)
 	glEnable(GL_LIGHTING);
 
 	//Draw ground
+
+	glDisable(GL_BLEND);
+	glDisable(GL_TEXTURE_GEN_S);
+	glDisable(GL_TEXTURE_GEN_T);
 
 	glCallList(terrainDL);
 
