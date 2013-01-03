@@ -14,7 +14,6 @@
 
 class Water
 {
-	int rainInterval;
 	GLfloat viscosity;
 
 	GLfloat position[SIZEG * SIZEG];

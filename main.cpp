@@ -57,6 +57,7 @@ Billboard* billboard;
 GLuint treeTex;
 float* treeList;
 Water* water;
+int rainCount = 0;
 
 void init();
 float* createTreePositionsList();
@@ -209,58 +210,12 @@ void renderScene(void)
 
 	skybox->Draw();
 
-	glLightfv(GL_LIGHT0,GL_POSITION,lPosition);
-
 	glMaterialfv(GL_FRONT, GL_SPECULAR, mSpecular);
 	glMaterialfv(GL_FRONT, GL_SHININESS,mShininess);
 	glMaterialfv(GL_FRONT, GL_AMBIENT, cWhite);
 	glMaterialfv(GL_FRONT, GL_DIFFUSE, cWhite);
-
-	//Draw water
-
-	glEnable(GL_TEXTURE_2D);
-	glBindTexture(GL_TEXTURE_2D, water->waterTexture);
-	glBegin(GL_QUADS);
-			glTexCoord2f(0, 0);
-			glVertex3f(0, 60, 0);
-			glTexCoord2f(1, 0);
-			glVertex3f(10, 60, 0);
-			glTexCoord2f(1, 1);
-			glVertex3f(10, 70, 0);
-			glTexCoord2f(0, 1);
-			glVertex3f(0, 70, 0);
-	glEnd();
 	
-	glEnable(GL_BLEND);
-	glEnable(GL_TEXTURE_GEN_S);
-	glEnable(GL_TEXTURE_GEN_T);
-	
-	water->CreateRainDrop();
-	water->Draw();
-	water->Exit();
-
-	//Draw axis
-
-	glPushMatrix();
-	glLoadIdentity();
-	glDisable(GL_LIGHTING);
-	glColor3f(1.0, 0.0, 0.0);
-	glBegin(GL_LINES);
-		glVertex3f(0.0, 0.0, 0.0);
-		glVertex3f(100.0, 0.0, 0.0);
-	glEnd();
-	glColor3f(0.0, 1.0, 0.0);
-	glBegin(GL_LINES);
-		glVertex3f(0.0, 0.0, 0.0);
-		glVertex3f(0.0, 100.0, 0.0);
-	glEnd();
-	glColor3f(0.0, 0.0, 1.0);
-	glBegin(GL_LINES);
-		glVertex3f(0.0, 0.0, 0.0);
-		glVertex3f(0.0, 0.0, 100.0);
-	glEnd();
-	glEnable(GL_LIGHTING);
-	glPopMatrix();
+	glLightfv(GL_LIGHT0,GL_POSITION,lPosition);
 
 	//Draw ground
 
@@ -271,6 +226,10 @@ void renderScene(void)
 	glCallList(terrainDL);
 
 	//Draw billboard
+
+	glDisable(GL_BLEND);
+	glDisable(GL_TEXTURE_GEN_S);
+	glDisable(GL_TEXTURE_GEN_T);
 
 	glEnable(GL_ALPHA_TEST);
 	glAlphaFunc(GL_GREATER, 0);
@@ -310,11 +269,69 @@ void renderScene(void)
 		billboard->End();
 	}
 
+	//Draw water
+
+	glEnable(GL_TEXTURE_2D);
+	glBindTexture(GL_TEXTURE_2D, water->waterTexture);
+	glBegin(GL_QUADS);
+			glTexCoord2f(0, 0);
+			glVertex3f(0, 60, 0);
+			glTexCoord2f(1, 0);
+			glVertex3f(10, 60, 0);
+			glTexCoord2f(1, 1);
+			glVertex3f(10, 70, 0);
+			glTexCoord2f(0, 1);
+			glVertex3f(0, 70, 0);
+	glEnd();
+	
+	glEnable(GL_BLEND);
+	glEnable(GL_TEXTURE_GEN_S);
+	glEnable(GL_TEXTURE_GEN_T);
+	
+	water->Draw();
+	water->Exit();
+
+	//Draw axis
+
+	glPushMatrix();	
+	glLoadIdentity();
+	glDisable(GL_BLEND);
+	//glDisable(GL_LIGHTING);
+	glColor3f(1.0, 0.0, 0.0);
+	glBegin(GL_LINES);
+		glVertex3f(0.0, 0.0, 0.0);
+		glVertex3f(100.0, 0.0, 0.0);
+	glEnd();
+	glColor3f(0.0, 1.0, 0.0);
+	glBegin(GL_LINES);
+		glVertex3f(0.0, 0.0, 0.0);
+		glVertex3f(0.0, 100.0, 0.0);
+	glEnd();
+	glColor3f(0.0, 0.0, 1.0);
+	glBegin(GL_LINES);
+		glVertex3f(0.0, 0.0, 0.0);
+		glVertex3f(0.0, 0.0, 100.0);
+	glEnd();
+	//glEnable(GL_LIGHTING);
+	glPopMatrix();
+
+	//Draw strings
+
+	glDisable(GL_BLEND);
 	frame++;
 	time=glutGet(GLUT_ELAPSED_TIME);
+	float fps = frame * 1000.0/(time - timebase);
+	rainCount++;
+	if(rainCount > fps)
+		rainCount += 1000;
+	if(rainCount >= 10000)
+	{
+		water->CreateRainDrop();
+		rainCount = 0;
+	}
 	if (time - timebase > 1000) 
 	{
-		sprintf(s,"FPS:%4.2f",frame*1000.0/(time-timebase));
+		sprintf(s,"FPS:%4.2f", fps);
 		timebase = time;		
 		frame = 0;
 	}
@@ -324,7 +341,10 @@ void renderScene(void)
 	glPushMatrix();
 	glLoadIdentity();
 	renderBitmapString(30,30,(void *)font,s); 
-	renderBitmapString(30,40,(void *)font,"Esc - Quit");
+	renderBitmapString(30,54,(void *)font,"Esc - Quit");
+	char s2[60];
+	sprintf(s2, "x: %3.2f %t y: %3.2f %t z: %3.2f", x, y, z);
+	renderBitmapString(30, 42, (void*) font, s2);
 	glPopMatrix();
 	resetPerspectiveProjection();
 	glEnable(GL_LIGHTING);

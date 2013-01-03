@@ -20,8 +20,7 @@ Water::~Water()
 
 void Water::CreateRainDrop()
 {
-	//velocity[(rand()%(SIZEG - 6) + 6) * SIZEG + rand()%(SIZEG - 6) + 6] = 1060;
-	velocity[10] = 1060;
+	velocity[(rand()%(SIZEG - 3) + 2) * SIZEG + rand()%(SIZEG - 3) + 2] = 10000;
 }
 
 void Water::Draw()
@@ -119,9 +118,9 @@ GLuint Water::LoadTexture()
 
 	glGenTextures(1, &texName);
 	glBindTexture(GL_TEXTURE_2D, texName);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB8, w, h, 0, GL_RGB, GL_UNSIGNED_BYTE, image->data);
 
@@ -134,22 +133,13 @@ void Water::Init()
 {
 	waterTexture = LoadTexture();
 
-	/*glShadeModel(GL_SMOOTH);
-	glClearDepth(1.0f);
-	//glClearColor(1, 1, 1, 1);
-	glClearStencil(0);
-	glEnable(GL_DEPTH_TEST);
-	glDepthFunc(GL_LEQUAL);
 	glBlendFunc(GL_SRC_COLOR, GL_ONE);
 	glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST);
-
-	glEnable(GL_TEXTURE_2D);*/
 
 	glTexGeni(GL_S, GL_TEXTURE_GEN_MODE, GL_SPHERE_MAP);
 	glTexGeni(GL_T, GL_TEXTURE_GEN_MODE, GL_SPHERE_MAP);
 
-	viscosity = 0.96;
-	rainInterval = 1000;
+	viscosity = 0.99;
 	
 	for(int i = 0; i < SIZEG; i++)
 		for(int j = 0; j < SIZEG; j++)
