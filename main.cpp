@@ -324,7 +324,7 @@ void renderScene(void)
 	rainCount++;
 	if(rainCount > fps)
 		rainCount += 1000;
-	if(rainCount >= 10000)
+	if(rainCount >= 5000)
 	{
 		water->CreateRainDrop();
 		rainCount = 0;

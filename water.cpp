@@ -20,7 +20,7 @@ Water::~Water()
 
 void Water::CreateRainDrop()
 {
-	velocity[(rand()%(SIZEG - 3) + 2) * SIZEG + rand()%(SIZEG - 3) + 2] = 10000;
+	velocity[(rand()%(SIZEG - 3) + 2) * SIZEG + rand()%(SIZEG - 3) + 2] = 100000;
 }
 
 void Water::Draw()
@@ -31,7 +31,7 @@ void Water::Draw()
 		{
 			velocity[i * SIZEG + j] = velocity[i * SIZEG + j] + (position[i * SIZEG + j] - 
 				(4*(position[(i - 1) * SIZEG + j] + position[(i + 1) * SIZEG + j] + position[i * SIZEG + j - 1] + position[i * SIZEG + j + 1])
-				+ position[(i - 1) * SIZEG + j - 1] + position[(i + 1) * SIZEG + j - 1] + position[(i - 1) * SIZEG + j + 1] + position[(i + 1) * SIZEG + j + 1]) / 25.0f) / 7.0f;
+				+ position[(i - 1) * SIZEG + j - 1] + position[(i + 1) * SIZEG + j - 1] + position[(i - 1) * SIZEG + j + 1] + position[(i + 1) * SIZEG + j + 1]) / 25.0f) / 50.0f;
 		}
 	}
 
@@ -48,9 +48,9 @@ void Water::Draw()
 	{
 		for(int j = 0; j < SIZEG; j++)
 		{
-			*(vertices + i * 3 * SIZEG + j * 3) = (i - SIZEG / 2.0) / (float)SIZEG * 5;
-			*(vertices + i * 3 * SIZEG + j * 3 + 1) = (position[i * SIZEG + j] / 1024.0) / (float)SIZEG * 3 + 10;
-			*(vertices + i * 3 * SIZEG + j * 3 + 2) = (j - SIZEG / 2.0) / (float)SIZEG * 5;
+			*(vertices + i * 3 * SIZEG + j * 3) = (i - SIZEG / 2.0) * 8.2f + 4.5f;
+			*(vertices + i * 3 * SIZEG + j * 3 + 1) = (position[i * SIZEG + j] / 1024.0) / (float)SIZEG * 3 + 5.5f;
+			*(vertices + i * 3 * SIZEG + j * 3 + 2) = (j - SIZEG / 2.0) * 5.5f + 70.0f;
 		}
 	}
 
@@ -133,7 +133,8 @@ void Water::Init()
 {
 	waterTexture = LoadTexture();
 
-	glBlendFunc(GL_SRC_COLOR, GL_ONE);
+	//glBlendFunc(GL_SRC_ALPHA, GL_SRC_COLOR);
+	glBlendFunc(GL_SRC_COLOR, GL_SRC_COLOR);
 	glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST);
 
 	glTexGeni(GL_S, GL_TEXTURE_GEN_MODE, GL_SPHERE_MAP);
