@@ -60,6 +60,7 @@ float* treeList;
 Water* water;
 int rainCount = 0;
 obj_type object;
+float deltaAircraftAngleX = 0, deltaAircraftAngleZ = 0, aircraftAngleX = 0, aircraftAngleZ = 0;
 
 void init();
 float* createTreePositionsList();
@@ -81,9 +82,7 @@ void changeSize(int w1, int h1)
 
 	glMatrixMode(GL_MODELVIEW);
 	glLoadIdentity();
-	gluLookAt(x, y, z, 
-		      x + lx,y + ly,z + lz,
-			  0.0f,1.0f,0.0f);
+	gluLookAt(x, y, z, x + lx, y + ly,z + lz, 0.0f,1.0f,0.0f);
 }
 
 void orientMe(float ang) 
@@ -159,6 +158,19 @@ void renderScene(void)
 		orientMe(angle);
 	}
 
+	if(deltaAircraftAngleX)
+		aircraftAngleX += deltaAircraftAngleX;
+	if(deltaAircraftAngleZ)
+		aircraftAngleZ += deltaAircraftAngleZ;
+	if(aircraftAngleX > 45)
+		aircraftAngleX = 45;
+	else if(aircraftAngleX < - 45)
+		aircraftAngleX = - 45;
+	if(aircraftAngleZ > 45)
+		aircraftAngleZ = 45;
+	else if(aircraftAngleZ < - 45)
+		aircraftAngleZ = - 45;
+
 	if(x < -255)
 		x = -255;
 	else if(x > 255)
@@ -173,13 +185,13 @@ void renderScene(void)
 	glLoadIdentity();
 	if(navigationMode == WALK)
 	{
-		y = terrain->GetHeight(x, z) + 5.0f;
+		y = terrain->GetHeight(x, z) + 30.0f;
 		gluLookAt(x, y, z, x + 10*lx,y + 10*ly,z + 10*lz, 0.0f,1.0f,0.0f);
 	}
 	else if(navigationMode == FLY)
 	{
-		if(y <= (terrain->GetHeight(x, z) + 0.5f))
-			y = terrain->GetHeight(x, z) + 0.5f;
+		if(y <= (terrain->GetHeight(x, z) + 30.0f))
+			y = terrain->GetHeight(x, z) + 30.0f;
 		gluLookAt(x, y, z, x + 10*lx,y + 10*ly,z + 10*lz, 0.0f,1.0f,0.0f);
 	}
 	
@@ -254,11 +266,13 @@ void renderScene(void)
 
 	glPushMatrix();
 	glBindTexture(GL_TEXTURE_2D, object.id_texture);
-
-	glTranslatef(0, 15, 0);
-	glScalef(0.10, 0.10, 0.10);
-	glRotatef(90, 1, 0, 0);
+	
+	glTranslatef(x + 10 * lx, y + 10 * ly - 10, z + 10 * lz - 30);
+	glRotatef(90 , 1, 0, 0);
 	glRotatef(180, 0, 1, 0);
+	glRotatef(aircraftAngleX, 1, 0, 0);
+	glRotatef(aircraftAngleZ, 0, 0, 1);
+	glScalef(0.10, 0.10, 0.10);
 
     glBegin(GL_TRIANGLES);
     for (int index=0; index < object.polygons_qty; index++)
@@ -425,16 +439,16 @@ void pressKey(int key, int x, int y)
 	switch (key) 
 	{
 		case GLUT_KEY_LEFT: 
-			deltaAngle = -0.005f;
+			deltaAircraftAngleZ = 1;
 			break;
 		case GLUT_KEY_RIGHT: 
-			deltaAngle = 0.005f;
+			deltaAircraftAngleZ = -1;
 			break;
 		case GLUT_KEY_UP: 
-			deltaMove = 1;
+			deltaAircraftAngleX = 1;
 			break;
 		case GLUT_KEY_DOWN :
-			deltaMove = -1;
+			deltaAircraftAngleX = -1;
 			break;
 	}
 }
@@ -443,18 +457,22 @@ void releaseKey(int key, int x, int y)
 {
 	switch (key) 
 	{
-		case GLUT_KEY_LEFT : if (deltaAngle < 0.0f) 
-								 deltaAngle = 0.0f;
-							 break;
-		case GLUT_KEY_RIGHT : if (deltaAngle > 0.0f) 
-								 deltaAngle = 0.0f;
-							 break;
-		case GLUT_KEY_UP :	 if (deltaMove > 0) 
-								 deltaMove = 0;
-							 break;
-		case GLUT_KEY_DOWN : if (deltaMove < 0) 
-								 deltaMove = 0;
-							 break;
+		case GLUT_KEY_LEFT: 
+			if(deltaAircraftAngleZ > 0) 
+				deltaAircraftAngleZ = 0;
+				break;
+		case GLUT_KEY_RIGHT: 
+			if(deltaAircraftAngleZ < 0) 
+				deltaAircraftAngleZ = 0;
+				break;
+		case GLUT_KEY_UP:	 
+			if(deltaAircraftAngleX > 0) 
+				deltaAircraftAngleX = 0;
+				break;
+		case GLUT_KEY_DOWN: 
+			if(deltaAircraftAngleX < 0) 
+				deltaAircraftAngleX = 0;
+				break;
 	}
 }
 
