@@ -8,6 +8,7 @@
 #include "skybox.h"
 #include "billboard.h"
 #include "water.h"
+#include "3dsloader.h"
 
 using namespace std;
 
@@ -58,6 +59,7 @@ GLuint treeTex;
 float* treeList;
 Water* water;
 int rainCount = 0;
+obj_type object;
 
 void init();
 float* createTreePositionsList();
@@ -82,27 +84,6 @@ void changeSize(int w1, int h1)
 	gluLookAt(x, y, z, 
 		      x + lx,y + ly,z + lz,
 			  0.0f,1.0f,0.0f);
-}
-
-void initScene() 
-{
-	glEnable(GL_DEPTH_TEST);
-	glEnable(GL_CULL_FACE);
-	glCullFace(GL_BACK);
-	terrainDL = terrain->Create(0,0,0);
-	y = terrain->GetHeight(0,0) + 5.0f;
-
-	//
-	treeTex = billboard->LoadTexture();
-	treeList = createTreePositionsList();
-	//
-
-	glLightfv(GL_LIGHT0,GL_AMBIENT,lAmbient);
-	glLightfv(GL_LIGHT0,GL_DIFFUSE,lDiffuse);
-	glLightfv(GL_LIGHT0,GL_SPECULAR,lSpecular);
-	glLightModeli(GL_LIGHT_MODEL_LOCAL_VIEWER,GL_TRUE);
-	glEnable(GL_LIGHTING);
-	glEnable(GL_LIGHT0);
 }
 
 void orientMe(float ang) 
@@ -268,6 +249,40 @@ void renderScene(void)
 		
 		billboard->End();
 	}
+
+	//Draw aircraft
+
+	glPushMatrix();
+	glBindTexture(GL_TEXTURE_2D, object.id_texture);
+
+	glTranslatef(0, 15, 0);
+	glScalef(0.10, 0.10, 0.10);
+	glRotatef(90, 1, 0, 0);
+	glRotatef(180, 0, 1, 0);
+
+    glBegin(GL_TRIANGLES);
+    for (int index=0; index < object.polygons_qty; index++)
+    {
+        glTexCoord2f( object.mapcoord[ object.polygon[index].a ].u,
+                      object.mapcoord[ object.polygon[index].a ].v);
+        glVertex3f( object.vertex[ object.polygon[index].a ].x,
+                    object.vertex[ object.polygon[index].a ].y,
+                    object.vertex[ object.polygon[index].a ].z);
+
+        glTexCoord2f( object.mapcoord[ object.polygon[index].b ].u,
+                      object.mapcoord[ object.polygon[index].b ].v);
+        glVertex3f( object.vertex[ object.polygon[index].b ].x,
+                    object.vertex[ object.polygon[index].b ].y,
+                    object.vertex[ object.polygon[index].b ].z);
+
+        glTexCoord2f( object.mapcoord[ object.polygon[index].c ].u,
+                      object.mapcoord[ object.polygon[index].c ].v);
+        glVertex3f( object.vertex[ object.polygon[index].c ].x,
+                    object.vertex[ object.polygon[index].c ].y,
+                    object.vertex[ object.polygon[index].c ].z);
+    }
+    glEnd();
+	glPopMatrix();
 
 	//Draw water
 
@@ -462,10 +477,8 @@ void mousePress(int button, int state, int x, int y)
 {
 	if (state == GLUT_DOWN) 
 	{
-		//		angle2 = 0;
 		deltaX = x;
 		deltaY = y;
-//		angle2Y = 0;
 	} 
 	else if (state == GLUT_UP) 
 	{
@@ -473,7 +486,6 @@ void mousePress(int button, int state, int x, int y)
 		angle = angle2;
 	}
 }
-
 
 void init() 
 {
@@ -495,7 +507,30 @@ void init()
 	glutDisplayFunc(renderScene);
 	glutIdleFunc(renderScene);
 	glutReshapeFunc(changeSize);
-	initScene();
+
+	glEnable(GL_DEPTH_TEST);
+	glEnable(GL_CULL_FACE);
+	glCullFace(GL_BACK);
+	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+	glEnable(GL_TEXTURE_2D);
+
+	//
+	Load3DS(&object, "Data/Aircraft/spaceship.3ds");
+	object.id_texture = Bitmap::LoadTexture("Data/Aircraft/spaceshiptexture.bmp");
+	//
+	terrainDL = terrain->Create(0,0,0);
+	y = terrain->GetHeight(0,0) + 5.0f;
+	//
+	treeTex = billboard->LoadTexture();
+	treeList = createTreePositionsList();
+	//
+
+	glLightfv(GL_LIGHT0,GL_AMBIENT,lAmbient);
+	glLightfv(GL_LIGHT0,GL_DIFFUSE,lDiffuse);
+	glLightfv(GL_LIGHT0,GL_SPECULAR,lSpecular);
+	glLightModeli(GL_LIGHT_MODEL_LOCAL_VIEWER,GL_TRUE);
+	glEnable(GL_LIGHTING);
+	glEnable(GL_LIGHT0);
 }
 
 int main(int argc, char **argv)
@@ -506,7 +541,7 @@ int main(int argc, char **argv)
 	glutInitWindowSize(1200,800);
 	glutCreateWindow("HeightMap");
 
-	if (terrain->LoadFromImage("Data/heightmaps/heightmap.bmp",1) != TERRAIN_OK)
+	if (terrain->LoadFromImage("Data/Heightmaps/heightmap.bmp",1) != TERRAIN_OK)
 		return(-1);
 	terrain->Scale(0,40);
 	init();

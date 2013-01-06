@@ -4,6 +4,7 @@
 #include <iostream>
 #include <cstdio>
 #include <string>
+#include <Windows.h>
 
 #include <glut.h>
 #include <gl\gl.h>
@@ -25,6 +26,13 @@ typedef struct tagRGBQuad
 	char rgbRed;
 	char rgbReserved;
 }RGBQuad;
+
+typedef struct tagRGBTriple
+{
+	char rgbBlue;
+	char rgbGreen;
+	char rgbRed;
+}RGBTriple;
 
 typedef struct tagBitmapFileHeader
 {
@@ -68,7 +76,7 @@ public:
 	~Bitmap();
 	bool LoadBmp(char*, int);
 	void ConvertToGray(unsigned char*);
-	//bool LoadTexture();
+	static GLuint LoadTexture(char*);
 	
 private:
 	BitmapFileHeader bmfh;

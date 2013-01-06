@@ -236,26 +236,58 @@ void Bitmap::ConvertToGray(unsigned char* tempData)
 	}
 }
 
-/*bool Bitmap::loadTexture()
+GLuint Bitmap::LoadTexture(char* filename)
 {
-	GLuint tex = 0;
+	GLuint tex;
+    FILE* file;
+    unsigned char* texture;
 
-	if(this == NULL)
-		return false;
+    BitmapFileHeader fileHeader; 
+    BitmapInfoHeader infoHeader;
+    RGBTriple rgb;
 
-	if(this->loadBmp(this->filename, 0))
-	{
-		glGenTextures(1, &tex);
+    if((file = fopen(filename, "rb")) == NULL) 
+		return (-1);
+    
+    fread(&fileHeader, sizeof(fileHeader), 1, file);
+    
+    fseek(file, sizeof(fileHeader), SEEK_SET);
+    fread(&infoHeader, sizeof(infoHeader), 1, file);
 
-		glBindTexture(GL_TEXTURE_2D, tex);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-		glTexImage2D(GL_TEXTURE_2D, 0, 3, this->width, this->height, 0, GL_RGB, GL_UNSIGNED_BYTE, this->colors);
+	texture = new byte[infoHeader.biWidth * infoHeader.biHeight * 4]();
 
-		glBindTexture(GL_TEXTURE_2D, 0);
-	}
-	else
-		return false;
+    memset(texture, 0, infoHeader.biWidth * infoHeader.biHeight * 4);
+ 
+	int j = 0;
+    for (int i=0; i < infoHeader.biWidth * infoHeader.biHeight; i++)
+    {
+            fread(&rgb, sizeof(rgb), 1, file); 
 
-	return true;
-}*/
+            texture[j+0] = rgb.rgbRed;
+            texture[j+1] = rgb.rgbGreen;
+            texture[j+2] = rgb.rgbBlue;
+            texture[j+3] = 255;
+            j += 4;
+    }
+
+    fclose(file);
+
+	glGenTextures(1, &tex);
+     
+    glBindTexture(GL_TEXTURE_2D, tex);
+
+    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_NEAREST);
+
+    glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
+
+    glTexImage2D(GL_TEXTURE_2D, 0, 4, infoHeader.biWidth, infoHeader.biHeight, 0, GL_RGBA, GL_UNSIGNED_BYTE, texture);
+
+    gluBuild2DMipmaps(GL_TEXTURE_2D, 4, infoHeader.biWidth, infoHeader.biHeight, GL_RGBA, GL_UNSIGNED_BYTE, texture);
+
+    delete texture;
+
+    return tex;
+}
