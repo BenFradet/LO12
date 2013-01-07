@@ -60,7 +60,9 @@ float* treeList;
 Water* water;
 int rainCount = 0;
 obj_type object;
-float deltaAircraftAngleX = 0, deltaAircraftAngleZ = 0, aircraftAngleX = 0, aircraftAngleZ = 0;
+float deltaAircraftAngleX = 0, aircraftAngleX = 0;
+float deltaAircraftAngleZ = 0, aircraftAngleZ = 0;
+float deltaAircraftAngle = 0, aircraftAngle = 0;
 
 void init();
 float* createTreePositionsList();
@@ -157,6 +159,9 @@ void renderScene(void)
 		angle += deltaAngle;
 		orientMe(angle);
 	}
+	
+	if(deltaAircraftAngle)
+		aircraftAngle += deltaAircraftAngle;
 
 	if(deltaAircraftAngleX)
 		aircraftAngleX += deltaAircraftAngleX;
@@ -209,7 +214,7 @@ void renderScene(void)
 	glMaterialfv(GL_FRONT, GL_DIFFUSE, cWhite);
 	
 	glLightfv(GL_LIGHT0,GL_POSITION,lPosition);
-
+	
 	//Draw ground
 
 	glDisable(GL_BLEND);
@@ -267,12 +272,17 @@ void renderScene(void)
 	glPushMatrix();
 	glBindTexture(GL_TEXTURE_2D, object.id_texture);
 	
-	glTranslatef(x + 10 * lx, y + 10 * ly - 10, z + 10 * lz - 30);
+	glTranslatef(x + 10 * lx, y + 10 * ly, z + 10 * lz);
 	glRotatef(90 , 1, 0, 0);
 	glRotatef(180, 0, 1, 0);
+	glRotatef(-aircraftAngle * 180, 0, 1, 0);
+	if(aircraftAngle < 0)
+		glRotatef(aircraftAngle * 180, 1, 0, 0);
+	else
+		glRotatef(-aircraftAngle * 180, 1, 0, 0);
 	glRotatef(aircraftAngleX, 1, 0, 0);
 	glRotatef(aircraftAngleZ, 0, 0, 1);
-	glScalef(0.10, 0.10, 0.10);
+	glScalef(0.01, 0.01, 0.01);
 
     glBegin(GL_TRIANGLES);
     for (int index=0; index < object.polygons_qty; index++)
@@ -392,9 +402,11 @@ void processNormalKeys(unsigned char key, int x, int y)
 		{
 			case 113: 
 				deltaAngle = -0.005f;
+				deltaAircraftAngle = deltaAngle;
 				break;
 			case 100: 
 				deltaAngle = 0.005f;
+				deltaAircraftAngle = deltaAngle;
 				break;
 			case 122: 
 				deltaMove = 1;
@@ -416,12 +428,18 @@ void releaseNormalKeys(unsigned char key, int x, int y)
 	switch (key) 
 	{
 		case 113: 
-			if (deltaAngle < 0.0f) 
+			if (deltaAngle < 0.0f)
+			{
 				deltaAngle = 0.0f;
+				deltaAircraftAngle = deltaAngle;
+			}
 			break;
 		case 100: 
-			if (deltaAngle > 0.0f) 
+			if (deltaAngle > 0.0f)
+			{
 				deltaAngle = 0.0f;
+				deltaAircraftAngle = deltaAngle;
+			}
 			break;
 		case 122:
 			if (deltaMove > 0) 
@@ -440,9 +458,11 @@ void pressKey(int key, int x, int y)
 	{
 		case GLUT_KEY_LEFT: 
 			deltaAircraftAngleZ = 1;
+			deltaAngle = -0.005f;
 			break;
 		case GLUT_KEY_RIGHT: 
 			deltaAircraftAngleZ = -1;
+			deltaAngle = 0.005f;
 			break;
 		case GLUT_KEY_UP: 
 			deltaAircraftAngleX = 1;
@@ -460,10 +480,14 @@ void releaseKey(int key, int x, int y)
 		case GLUT_KEY_LEFT: 
 			if(deltaAircraftAngleZ > 0) 
 				deltaAircraftAngleZ = 0;
+			if(deltaAngle < 0)
+				deltaAngle = 0;
 				break;
 		case GLUT_KEY_RIGHT: 
 			if(deltaAircraftAngleZ < 0) 
 				deltaAircraftAngleZ = 0;
+			if(deltaAngle > 0)
+				deltaAngle = 0;
 				break;
 		case GLUT_KEY_UP:	 
 			if(deltaAircraftAngleX > 0) 
