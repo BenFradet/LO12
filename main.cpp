@@ -12,24 +12,23 @@
 
 using namespace std;
 
-// stuff for lighting
 GLfloat lAmbient[] = {0.3,0.3,0.3,1.0};
 GLfloat lDiffuse[] = {1.0,1.0,1.0,1.0};
 GLfloat lSpecular[] = {1.0,1.0,1.0,1.0};
 
-GLfloat lPosition[] = {0.0,100.0,0.0,1.0};
+GLfloat lPosition[] = {0.0,255.0,0.0,1.0};
+GLfloat lpAircraft[4];
+GLfloat ldAircraft[] = {0.0, 0.0, -1.0};
 
-// materials
 GLfloat mSpecular[] = {1.0,1.0,1.0,1.0};
-// the smaller the larger the specular area is
 GLfloat mShininess[] = {128.0};
 
 //colors
-GLfloat cBlack[] = {0.0,0.0,0.0,1.0};
-GLfloat cOrange[] = {1.0,0.5,0.5,1.0}; 
-GLfloat cWhite[] = {1.0,1.0,1.0,1.0}; 
-GLfloat cGrey[] = {0.1,0.1,0.1,1.0};
-GLfloat cLightGrey[] = {0.9,0.9,0.9,1.0};
+GLfloat Black[] = {0.0,0.0,0.0,1.0};
+GLfloat Yellow[] = {1.0,1.0,0.0,1.0}; 
+GLfloat White[] = {1.0,1.0,1.0,1.0}; 
+GLfloat Grey[] = {0.1,0.1,0.1,1.0};
+GLfloat LightGrey[] = {0.9,0.9,0.9,1.0};
 
 #define FLY		1
 #define WALK	2
@@ -208,12 +207,39 @@ void renderScene(void)
 
 	skybox->Draw();
 
+	// Draw lights
+
 	glMaterialfv(GL_FRONT, GL_SPECULAR, mSpecular);
 	glMaterialfv(GL_FRONT, GL_SHININESS,mShininess);
-	glMaterialfv(GL_FRONT, GL_AMBIENT, cWhite);
-	glMaterialfv(GL_FRONT, GL_DIFFUSE, cWhite);
+	glMaterialfv(GL_FRONT, GL_AMBIENT, White);
+	glMaterialfv(GL_FRONT, GL_DIFFUSE, White);
 	
 	glLightfv(GL_LIGHT0,GL_POSITION,lPosition);
+
+	/*glMatrixMode(GL_MODELVIEW);
+	glPushMatrix();
+	glLoadIdentity();
+	glMaterialfv(GL_FRONT, GL_SPECULAR, mSpecular);
+	glMaterialfv(GL_FRONT, GL_SHININESS, mShininess);
+	glMaterialfv(GL_FRONT, GL_AMBIENT, Yellow);
+	glMaterialfv(GL_FRONT, GL_DIFFUSE, Yellow);
+
+	lpAircraft[0] = 0;
+	lpAircraft[1] = 0;
+	lpAircraft[2] = 0;
+	lpAircraft[3] = 1.0f;
+
+	ldAircraft[0] = 0;
+	ldAircraft[1] = 0;
+	ldAircraft[2] = -1;
+	
+	glLightfv(GL_LIGHT1, GL_POSITION, lpAircraft);
+	glLightfv(GL_LIGHT1, GL_SPOT_DIRECTION, ldAircraft);
+	GLfloat exponent[] = {100.0};
+	glLightfv(GL_LIGHT1, GL_SPOT_EXPONENT, exponent);
+	GLfloat cutoff[] = {15.0};
+	glLightfv(GL_LIGHT1, GL_SPOT_CUTOFF, cutoff);
+	glPopMatrix();*/
 	
 	//Draw ground
 
@@ -276,6 +302,7 @@ void renderScene(void)
 	glRotatef(90 , 1, 0, 0);
 	glRotatef(180, 0, 1, 0);
 	glRotatef(-aircraftAngle * 180, 0, 1, 0);
+
 	if(aircraftAngle < 0)
 		glRotatef(aircraftAngle * 180, 1, 0, 0);
 	else
@@ -570,9 +597,16 @@ void init()
 	glLightfv(GL_LIGHT0,GL_AMBIENT,lAmbient);
 	glLightfv(GL_LIGHT0,GL_DIFFUSE,lDiffuse);
 	glLightfv(GL_LIGHT0,GL_SPECULAR,lSpecular);
-	glLightModeli(GL_LIGHT_MODEL_LOCAL_VIEWER,GL_TRUE);
+	glLightModeli(GL_LIGHT_MODEL_LOCAL_VIEWER,GL_FALSE);
 	glEnable(GL_LIGHTING);
 	glEnable(GL_LIGHT0);
+
+	glMatrixMode(GL_MODELVIEW);
+	glLoadIdentity();
+	glLightfv(GL_LIGHT1,GL_AMBIENT,lAmbient);
+	glLightfv(GL_LIGHT1,GL_DIFFUSE,lDiffuse);
+	glLightfv(GL_LIGHT1,GL_SPECULAR,lSpecular);
+	glEnable(GL_LIGHT1);
 }
 
 int main(int argc, char **argv)
