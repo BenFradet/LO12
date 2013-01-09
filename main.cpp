@@ -25,7 +25,7 @@ GLfloat mShininess[] = {128.0};
 
 //colors
 GLfloat Black[] = {0.0,0.0,0.0,1.0};
-GLfloat Yellow[] = {1.0,1.0,0.0,1.0}; 
+GLfloat Yellow[] = {0.0,0.0,1.0,1.0}; 
 GLfloat White[] = {1.0,1.0,1.0,1.0}; 
 GLfloat Grey[] = {0.1,0.1,0.1,1.0};
 GLfloat LightGrey[] = {0.9,0.9,0.9,1.0};
@@ -199,7 +199,7 @@ void renderScene(void)
 		gluLookAt(x, y, z, x + 10*lx,y + 10*ly,z + 10*lz, 0.0f,1.0f,0.0f);
 	}
 	
-	//gluLookAt(5, 75, 15, 5, 75, 0, 0, 1, 0);
+	//gluLookAt(5, 85, 10, 5, 85, 0, 0, 1, 0);
 
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 
@@ -594,19 +594,40 @@ void init()
 	treeList = createTreePositionsList();
 	//
 
+	glMatrixMode(GL_MODELVIEW);
+	glLoadIdentity();
+	glLightfv(GL_LIGHT1,GL_AMBIENT,lAmbient);
+	glLightfv(GL_LIGHT1,GL_DIFFUSE,lDiffuse);
+	glLightfv(GL_LIGHT1,GL_SPECULAR,lSpecular);
+	glLoadIdentity();
+	glMaterialfv(GL_FRONT, GL_SPECULAR, mSpecular);
+	glMaterialfv(GL_FRONT, GL_SHININESS, mShininess);
+	glMaterialfv(GL_FRONT, GL_AMBIENT, Yellow);
+	glMaterialfv(GL_FRONT, GL_DIFFUSE, Yellow);
+
+	lpAircraft[0] = 0;
+	lpAircraft[1] = 0;
+	lpAircraft[2] = 0;
+	lpAircraft[3] = 1.0f;
+
+	ldAircraft[0] = 0;
+	ldAircraft[1] = 0;
+	ldAircraft[2] = -1;
+	
+	glLightfv(GL_LIGHT1, GL_POSITION, lpAircraft);
+	glLightfv(GL_LIGHT1, GL_SPOT_DIRECTION, ldAircraft);
+	GLfloat exponent[] = {100.0};
+	glLightfv(GL_LIGHT1, GL_SPOT_EXPONENT, exponent);
+	GLfloat cutoff[] = {15.0};
+	glLightfv(GL_LIGHT1, GL_SPOT_CUTOFF, cutoff);
+	glEnable(GL_LIGHT1);
+
 	glLightfv(GL_LIGHT0,GL_AMBIENT,lAmbient);
 	glLightfv(GL_LIGHT0,GL_DIFFUSE,lDiffuse);
 	glLightfv(GL_LIGHT0,GL_SPECULAR,lSpecular);
 	glLightModeli(GL_LIGHT_MODEL_LOCAL_VIEWER,GL_FALSE);
 	glEnable(GL_LIGHTING);
 	glEnable(GL_LIGHT0);
-
-	glMatrixMode(GL_MODELVIEW);
-	glLoadIdentity();
-	glLightfv(GL_LIGHT1,GL_AMBIENT,lAmbient);
-	glLightfv(GL_LIGHT1,GL_DIFFUSE,lDiffuse);
-	glLightfv(GL_LIGHT1,GL_SPECULAR,lSpecular);
-	glEnable(GL_LIGHT1);
 }
 
 int main(int argc, char **argv)

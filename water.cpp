@@ -20,7 +20,7 @@ Water::~Water()
 
 void Water::CreateRainDrop()
 {
-	velocity[(rand()%(SIZEG - 3) + 2) * SIZEG + rand()%(SIZEG - 3) + 2] = 100000;
+	velocity[(rand()%(SIZEG - 3) + 2) * SIZEG + rand()%(SIZEG - 3) + 2] = 75000;
 }
 
 void Water::Draw()
@@ -48,8 +48,8 @@ void Water::Draw()
 	{
 		for(int j = 0; j < SIZEG; j++)
 		{
-			*(vertices + i * 3 * SIZEG + j * 3) = (i - SIZEG / 2.0) * 8.2f + 4.5f;
-			*(vertices + i * 3 * SIZEG + j * 3 + 1) = (position[i * SIZEG + j] / 1024.0) / (float)SIZEG * 3 + 5.5f;
+			*(vertices + i * 3 * SIZEG + j * 3) = (i - SIZEG / 2.0) * 8.2f + 5.5f;
+			*(vertices + i * 3 * SIZEG + j * 3 + 1) = (position[i * SIZEG + j] / 1024.0) / (float)SIZEG * 3 + 3.5f;
 			*(vertices + i * 3 * SIZEG + j * 3 + 2) = (j - SIZEG / 2.0) * 5.5f + 70.0f;
 		}
 	}
@@ -94,10 +94,8 @@ void Water::Draw()
 			for(int i = 0; i < SIZEG; i++)
 			{
 				glNormal3f(normals[i * 3 * SIZEG + (j + 1) * 3], normals[i * 3 * SIZEG + (j + 1)* 3 + 1], normals[i * 3 * SIZEG + (j + 1) * 3 + 2]);
-				glTexCoord2f(i / SIZEG, (j + 1) / SIZEG);
 				glVertex3f(vertices[i * 3 * SIZEG + j * 3 + 3], vertices[i * 3 * SIZEG + j * 3 + 4], vertices[i * 3 * SIZEG + j * 3 + 5]);
 				glNormal3f(normals[i * 3 * SIZEG + j * 3], normals[i * 3 * SIZEG + j * 3 + 1], normals[i * 3 * SIZEG + j * 3 + 2]);
-				glTexCoord2f(i / SIZEG, j / SIZEG);
 				glVertex3f(vertices[i * 3 * SIZEG + j * 3], vertices[i * 3 * SIZEG + j * 3 + 1], vertices[i * 3 * SIZEG + j * 3 + 2]);
 			}
 	}

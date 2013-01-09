@@ -67,7 +67,6 @@ void Terrain::ComputeNormals()
 			norm3 = NULL;
 			norm4 = NULL;
 
-			// normals for the four corners
 			if (i == 0 && j == 0) {
 				norm1 = CrossProduct(0,0, 0,1, 1,0);	
 				NormalizeVector(norm1);				
@@ -85,7 +84,6 @@ void Terrain::ComputeNormals()
 				NormalizeVector(norm1);				
 			}
 
-			// normals for the borders
 			else if (i == 0) {
 				norm1 = CrossProduct(j,0, j-1,0, j,1);
 				NormalizeVector(norm1);
@@ -111,7 +109,6 @@ void Terrain::ComputeNormals()
 				NormalizeVector(norm2);
 			}
 
-			// normals for the interior
 			else {
 				norm1 = CrossProduct(j,i, j-1,i, j,i+1);
 				NormalizeVector(norm1);
