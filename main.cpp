@@ -16,8 +16,8 @@ GLfloat lAmbient[] = {0.3,0.3,0.3,1.0};
 GLfloat lDiffuse[] = {1.0,1.0,1.0,1.0};
 GLfloat lSpecular[] = {1.0,1.0,1.0,1.0};
 
-GLfloat lPosition[] = {0.0,255.0,0.0,1.0};
-GLfloat lpAircraft[4];
+GLfloat lPosition[] = {0.0,255.0,0.0,0.0};
+GLfloat lpAircraft[] = {0.0, 0.0, 0.0, 1.0};
 GLfloat ldAircraft[] = {0.0, 0.0, -1.0};
 
 GLfloat mSpecular[] = {1.0,1.0,1.0,1.0};
@@ -149,6 +149,24 @@ float* createTreePositionsList()
 	return list;
 }
 
+void defSources()
+{
+	glEnable(GL_LIGHTING);
+
+	glLightfv(GL_LIGHT0,GL_POSITION,lPosition);
+
+	glLightfv(GL_LIGHT1, GL_POSITION, lpAircraft);
+	glLightfv(GL_LIGHT1, GL_SPOT_DIRECTION, ldAircraft);
+}
+
+void defMaterial()
+{	
+	glMaterialfv(GL_FRONT, GL_SPECULAR, mSpecular);
+	glMaterialfv(GL_FRONT, GL_SHININESS,mShininess);
+	glMaterialfv(GL_FRONT, GL_AMBIENT, White);
+	glMaterialfv(GL_FRONT, GL_DIFFUSE, White);
+}
+
 void renderScene(void) 
 {
 	if (deltaMove)
@@ -166,14 +184,10 @@ void renderScene(void)
 		aircraftAngleX += deltaAircraftAngleX;
 	if(deltaAircraftAngleZ)
 		aircraftAngleZ += deltaAircraftAngleZ;
-	if(aircraftAngleX > 45)
-		aircraftAngleX = 45;
-	else if(aircraftAngleX < - 45)
-		aircraftAngleX = - 45;
-	if(aircraftAngleZ > 45)
-		aircraftAngleZ = 45;
-	else if(aircraftAngleZ < - 45)
-		aircraftAngleZ = - 45;
+	if(aircraftAngle > 45)
+		aircraftAngle = 45;
+	else if(aircraftAngle < - 45)
+		aircraftAngle = - 45;
 
 	if(x < -255)
 		x = -255;
@@ -209,37 +223,9 @@ void renderScene(void)
 
 	// Draw lights
 
-	glMaterialfv(GL_FRONT, GL_SPECULAR, mSpecular);
-	glMaterialfv(GL_FRONT, GL_SHININESS,mShininess);
-	glMaterialfv(GL_FRONT, GL_AMBIENT, White);
-	glMaterialfv(GL_FRONT, GL_DIFFUSE, White);
-	
-	glLightfv(GL_LIGHT0,GL_POSITION,lPosition);
+	defMaterial();
 
-	/*glMatrixMode(GL_MODELVIEW);
-	glPushMatrix();
-	glLoadIdentity();
-	glMaterialfv(GL_FRONT, GL_SPECULAR, mSpecular);
-	glMaterialfv(GL_FRONT, GL_SHININESS, mShininess);
-	glMaterialfv(GL_FRONT, GL_AMBIENT, Yellow);
-	glMaterialfv(GL_FRONT, GL_DIFFUSE, Yellow);
-
-	lpAircraft[0] = 0;
-	lpAircraft[1] = 0;
-	lpAircraft[2] = 0;
-	lpAircraft[3] = 1.0f;
-
-	ldAircraft[0] = 0;
-	ldAircraft[1] = 0;
-	ldAircraft[2] = -1;
-	
-	glLightfv(GL_LIGHT1, GL_POSITION, lpAircraft);
-	glLightfv(GL_LIGHT1, GL_SPOT_DIRECTION, ldAircraft);
-	GLfloat exponent[] = {100.0};
-	glLightfv(GL_LIGHT1, GL_SPOT_EXPONENT, exponent);
-	GLfloat cutoff[] = {15.0};
-	glLightfv(GL_LIGHT1, GL_SPOT_CUTOFF, cutoff);
-	glPopMatrix();*/
+	defSources();
 	
 	//Draw ground
 
@@ -260,37 +246,40 @@ void renderScene(void)
 	glEnable(GL_TEXTURE_2D);
 	glBindTexture(GL_TEXTURE_2D, treeTex);
 
-	billboard->CylindricalBegin();
-
+	/*billboard->CylindricalBegin(x, y, z, 5, 10, 15);
 	glBegin(GL_QUADS);
 			glTexCoord2f(0, 0);
-			glVertex3f(0, 70, 0);
+			glVertex3f(5, 10, 15);
 			glTexCoord2f(1, 0);
-			glVertex3f(10, 70, 0);
+			glVertex3f(15, 10, 15);
 			glTexCoord2f(1, 1);
-			glVertex3f(10, 80, 0);
+			glVertex3f(15, 20, 15);
 			glTexCoord2f(0, 1);
-			glVertex3f(0, 80, 0);
+			glVertex3f(5, 20, 15);
 	glEnd();
 	
-	billboard->End();
+	billboard->End();*/
 
+	
 	for(int i = 0; i < 45; i += 3)
 	{
-		billboard->CylindricalBegin(x, y, z, *(treeList + i), *(treeList + i + 1), *(treeList + i + 2));
+		glPushMatrix();
+		glTranslatef(treeList[i], treeList[i + 1], treeList[i + 2]);
+		billboard->CylindricalBegin(x, y, z, treeList[i], treeList[i + 1], treeList[i + 2]);
 
 		glBegin(GL_QUADS);
 			glTexCoord2f(0, 0);
-			glVertex3f(*(treeList + i), *(treeList + i + 1), *(treeList + i + 2));
+			glVertex3f(0, 0, 0);
 			glTexCoord2f(1, 0);
-			glVertex3f(*(treeList + i) + 10, *(treeList + i + 1), *(treeList + i + 2));
+			glVertex3f(10, 0, 0);
 			glTexCoord2f(1, 1);
-			glVertex3f(*(treeList + i) + 10, *(treeList + i + 1) + 10, *(treeList + i + 2));
+			glVertex3f(10, 10, 0);
 			glTexCoord2f(0, 1);
-			glVertex3f(*(treeList + i), *(treeList + i + 1) + 10, *(treeList + i + 2));
+			glVertex3f(0, 10, 0);
 		glEnd();
 		
 		billboard->End();
+		glPopMatrix();
 	}
 
 	//Draw aircraft
@@ -337,7 +326,7 @@ void renderScene(void)
 
 	//Draw water
 
-	glEnable(GL_TEXTURE_2D);
+	/*glEnable(GL_TEXTURE_2D);
 	glBindTexture(GL_TEXTURE_2D, water->waterTexture);
 	glBegin(GL_QUADS);
 			glTexCoord2f(0, 0);
@@ -348,7 +337,7 @@ void renderScene(void)
 			glVertex3f(10, 70, 0);
 			glTexCoord2f(0, 1);
 			glVertex3f(0, 70, 0);
-	glEnd();
+	glEnd();*/
 	
 	glEnable(GL_BLEND);
 	glEnable(GL_TEXTURE_GEN_S);
@@ -359,11 +348,11 @@ void renderScene(void)
 
 	//Draw axis
 
-	glPushMatrix();	
-	glLoadIdentity();
 	glDisable(GL_BLEND);
-	//glDisable(GL_LIGHTING);
-	glColor3f(1.0, 0.0, 0.0);
+	glDisable(GL_TEXTURE_GEN_S);
+	glDisable(GL_TEXTURE_GEN_T);
+	glDisable(GL_LIGHTING);
+	/*glColor3f(1.0, 0.0, 0.0);
 	glBegin(GL_LINES);
 		glVertex3f(0.0, 0.0, 0.0);
 		glVertex3f(100.0, 0.0, 0.0);
@@ -377,9 +366,7 @@ void renderScene(void)
 	glBegin(GL_LINES);
 		glVertex3f(0.0, 0.0, 0.0);
 		glVertex3f(0.0, 0.0, 100.0);
-	glEnd();
-	//glEnable(GL_LIGHTING);
-	glPopMatrix();
+	glEnd();*/
 
 	//Draw strings
 
@@ -485,11 +472,9 @@ void pressKey(int key, int x, int y)
 	{
 		case GLUT_KEY_LEFT: 
 			deltaAircraftAngleZ = 1;
-			deltaAngle = -0.005f;
 			break;
 		case GLUT_KEY_RIGHT: 
 			deltaAircraftAngleZ = -1;
-			deltaAngle = 0.005f;
 			break;
 		case GLUT_KEY_UP: 
 			deltaAircraftAngleX = 1;
@@ -507,14 +492,10 @@ void releaseKey(int key, int x, int y)
 		case GLUT_KEY_LEFT: 
 			if(deltaAircraftAngleZ > 0) 
 				deltaAircraftAngleZ = 0;
-			if(deltaAngle < 0)
-				deltaAngle = 0;
 				break;
 		case GLUT_KEY_RIGHT: 
 			if(deltaAircraftAngleZ < 0) 
 				deltaAircraftAngleZ = 0;
-			if(deltaAngle > 0)
-				deltaAngle = 0;
 				break;
 		case GLUT_KEY_UP:	 
 			if(deltaAircraftAngleX > 0) 
@@ -556,6 +537,39 @@ void mousePress(int button, int state, int x, int y)
 	}
 }
 
+void defModel()
+{
+	GLfloat color[4];
+	color[0] = 0.5;
+	color[1] = 0.5;
+	color[2] = 0.5;
+	color[3] = 1;
+	
+	glLightModelfv(GL_LIGHT_MODEL_AMBIENT, color);
+	glLightModeli(GL_LIGHT_MODEL_LOCAL_VIEWER, GL_TRUE);
+	glLightModeli(GL_LIGHT_MODEL_TWO_SIDE, GL_TRUE);
+}
+
+void initSources()
+{
+	glLightfv(GL_LIGHT1, GL_AMBIENT, Yellow);
+	glLightfv(GL_LIGHT1, GL_DIFFUSE, Yellow);
+	glLightfv(GL_LIGHT1, GL_SPECULAR, Yellow);
+
+	GLfloat exponent[] = {120.0};
+	glLightfv(GL_LIGHT1, GL_SPOT_EXPONENT, exponent);
+	GLfloat cutoff[] = {30.0};
+	glLightfv(GL_LIGHT1, GL_SPOT_CUTOFF, cutoff);
+
+	glLightfv(GL_LIGHT0,GL_AMBIENT,lAmbient);
+	glLightfv(GL_LIGHT0,GL_DIFFUSE,lDiffuse);
+	glLightfv(GL_LIGHT0,GL_SPECULAR,lSpecular);
+
+	glEnable(GL_LIGHTING);
+	glEnable(GL_LIGHT1);
+	glEnable(GL_LIGHT0);
+}
+
 void init() 
 {
 	skybox = new Skybox();
@@ -594,40 +608,9 @@ void init()
 	treeList = createTreePositionsList();
 	//
 
-	glMatrixMode(GL_MODELVIEW);
-	glLoadIdentity();
-	glLightfv(GL_LIGHT1,GL_AMBIENT,lAmbient);
-	glLightfv(GL_LIGHT1,GL_DIFFUSE,lDiffuse);
-	glLightfv(GL_LIGHT1,GL_SPECULAR,lSpecular);
-	glLoadIdentity();
-	glMaterialfv(GL_FRONT, GL_SPECULAR, mSpecular);
-	glMaterialfv(GL_FRONT, GL_SHININESS, mShininess);
-	glMaterialfv(GL_FRONT, GL_AMBIENT, Yellow);
-	glMaterialfv(GL_FRONT, GL_DIFFUSE, Yellow);
+	defModel();
 
-	lpAircraft[0] = 0;
-	lpAircraft[1] = 0;
-	lpAircraft[2] = 0;
-	lpAircraft[3] = 1.0f;
-
-	ldAircraft[0] = 0;
-	ldAircraft[1] = 0;
-	ldAircraft[2] = -1;
-	
-	glLightfv(GL_LIGHT1, GL_POSITION, lpAircraft);
-	glLightfv(GL_LIGHT1, GL_SPOT_DIRECTION, ldAircraft);
-	GLfloat exponent[] = {100.0};
-	glLightfv(GL_LIGHT1, GL_SPOT_EXPONENT, exponent);
-	GLfloat cutoff[] = {15.0};
-	glLightfv(GL_LIGHT1, GL_SPOT_CUTOFF, cutoff);
-	glEnable(GL_LIGHT1);
-
-	glLightfv(GL_LIGHT0,GL_AMBIENT,lAmbient);
-	glLightfv(GL_LIGHT0,GL_DIFFUSE,lDiffuse);
-	glLightfv(GL_LIGHT0,GL_SPECULAR,lSpecular);
-	glLightModeli(GL_LIGHT_MODEL_LOCAL_VIEWER,GL_FALSE);
-	glEnable(GL_LIGHTING);
-	glEnable(GL_LIGHT0);
+	initSources();
 }
 
 int main(int argc, char **argv)

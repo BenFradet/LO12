@@ -249,7 +249,7 @@ int Terrain::Create(float xOffset, float yOffset, float zOffset)
 		glEnable(GL_TEXTURE_2D);
 		glBindTexture(GL_TEXTURE_2D, texName);
 
-		glBegin(GL_QUADS);
+		/*glBegin(GL_QUADS);
 			glTexCoord2f(1, 0);
 			glVertex3f(10, 80, 0);
 			glTexCoord2f(1, 1);
@@ -258,7 +258,7 @@ int Terrain::Create(float xOffset, float yOffset, float zOffset)
 			glVertex3f(0, 90, 0);
 			glTexCoord2f(0, 0);
 			glVertex3f(0, 80, 0);
-		glEnd();
+		glEnd();*/
 
 		glBegin(GL_TRIANGLE_STRIP);
 		for (int j = 0;j < width; j++) 

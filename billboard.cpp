@@ -24,7 +24,7 @@ void Billboard::CylindricalBegin()
 void Billboard::CylindricalBegin(float camX, float camY, float camZ, float objX, float objY, float objZ)
 {
 	float lookAt[3], objToCamProj[3], upAux[3];
-	float modelView[16], angleCosine;
+	float angleCosine;
 
 	glPushMatrix();
 
@@ -36,11 +36,17 @@ void Billboard::CylindricalBegin(float camX, float camY, float camZ, float objX,
 	lookAt[1] = 0;
 	lookAt[2] = 1;
 
-	Vector::normalize(objToCamProj);
+	//Vector::normalize(objToCamProj);
+	float vLength = sqrt(objToCamProj[0] * objToCamProj[0] + objToCamProj[1] * objToCamProj[1] + objToCamProj[2] * objToCamProj[2]);
+	objToCamProj[0] /= vLength;
+	objToCamProj[1] /= vLength;
+	objToCamProj[2] /= vLength;
 
-	Vector::crossProduct(upAux, lookAt, objToCamProj);
+	upAux[0] = lookAt[1] * objToCamProj[2] - lookAt[2] * objToCamProj[1];
+	upAux[1] = lookAt[2] * objToCamProj[0] - lookAt[0] * objToCamProj[2];
+	upAux[2] = lookAt[0] * objToCamProj[1] - lookAt[1] * objToCamProj[0];
 
-	angleCosine = Vector::dotProduct(lookAt, objToCamProj);
+	angleCosine = lookAt[0] * objToCamProj[0] + lookAt[1] * objToCamProj[1] + lookAt[2] * objToCamProj[2];
 
 	if ((angleCosine < 0.99990) && (angleCosine > -0.9999))
       glRotatef(acos(angleCosine)*180/3.14,upAux[0], upAux[1], upAux[2]);
@@ -68,7 +74,6 @@ GLuint Billboard::LoadTexture()
 		*(tex + i + 1 + j) = *(image->data + i + 1);
 		*(tex + i + 2 + j) = *(image->data + i + 2);
 		j++;
-		//if((*(image->data + i) - *(image->data + i + 1)) < 5 && (*(image->data + i) - *(image->data + i + 2)) < 5)
 		if(*(image->data + i) > 80 && *(image->data + i + 1) > 80 && *(image->data + i + 2) > 80)
 			*(tex + i + 2 + j) = 0;
 		else

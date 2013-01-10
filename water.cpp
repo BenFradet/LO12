@@ -87,10 +87,10 @@ void Water::Draw()
 	}
 
 	glBindTexture(GL_TEXTURE_2D, waterTexture);
-
+	
+	glBegin(GL_QUAD_STRIP);
 	for(int j = 0; j < SIZEG - 1; j++)
 	{
-		glBegin(GL_QUAD_STRIP);
 			for(int i = 0; i < SIZEG; i++)
 			{
 				glNormal3f(normals[i * 3 * SIZEG + (j + 1) * 3], normals[i * 3 * SIZEG + (j + 1)* 3 + 1], normals[i * 3 * SIZEG + (j + 1) * 3 + 2]);
@@ -99,6 +99,7 @@ void Water::Draw()
 				glVertex3f(vertices[i * 3 * SIZEG + j * 3], vertices[i * 3 * SIZEG + j * 3 + 1], vertices[i * 3 * SIZEG + j * 3 + 2]);
 			}
 	}
+	glEnd();
 }
 
 void Water::Exit()
